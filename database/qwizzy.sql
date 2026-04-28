@@ -118,3 +118,49 @@ CREATE TABLE attempt_answers (
     FOREIGN KEY (selected_option_id) REFERENCES question_options (id)
     ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
+
+-- Categories (optional, used for filtering/organization)
+CREATE TABLE categories (
+  id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name        VARCHAR(100) NOT NULL,
+  description TEXT NULL,
+  created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_categories_name (name)
+) ENGINE=InnoDB;
+
+-- Quiz <-> Category mapping (many-to-many)
+CREATE TABLE quiz_categories (
+  quiz_id     BIGINT UNSIGNED NOT NULL,
+  category_id INT UNSIGNED NOT NULL,
+
+  PRIMARY KEY (quiz_id, category_id),
+
+  CONSTRAINT fk_qc_quiz
+    FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT fk_qc_category
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- Results (pass/fail + score + percentage)
+CREATE TABLE results (
+  id               BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  quiz_attempt_id  BIGINT UNSIGNED NOT NULL,
+
+  final_score      DECIMAL(10,2) NOT NULL,
+  max_score        DECIMAL(10,2) NOT NULL,
+  percentage       DECIMAL(5,2) NOT NULL,
+  status           ENUM('pass', 'fail') NOT NULL,
+
+  achieved_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_result_attempt (quiz_attempt_id),
+
+  CONSTRAINT fk_results_attempt 
+    FOREIGN KEY (quiz_attempt_id) REFERENCES quiz_attempts(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
