@@ -1,49 +1,54 @@
 const { db } = require("../config/db");
 
-class QuizRepository {
-  async findAll() {
-    const [rows] = await db.query("SELECT * FROM quizzes");
-    return rows;
+const findAll = async () => {
+  const [rows] = await db.query("SELECT * FROM quizzes");
+  return rows;
+};
+
+const findById = async (id) => {
+  const [rows] = await db.query("SELECT * FROM quizzes WHERE id = ?", [id]);
+  return rows[0] || null;
+};
+
+const create = async (data) => {
+  const { title, description, created_by_user_id, is_published, time_limit_minutes } = data;
+  const [result] = await db.query(
+    "INSERT INTO quizzes (title, description, created_by_user_id, is_published, time_limit_minutes) VALUES (?, ?, ?, ?, ?)",
+    [title, description || null, created_by_user_id, is_published || 0, time_limit_minutes || null]
+  );
+  return findById(result.insertId);
+};
+
+const update = async (id, data) => {
+  const updates = [];
+  const values = [];
+  
+  for (const [key, value] of Object.entries(data)) {
+    updates.push(`${key} = ?`);
+    values.push(value);
   }
+  
+  if (updates.length === 0) return findById(id);
 
-  async findById(id) {
-    const [rows] = await db.query("SELECT * FROM quizzes WHERE id = ?", [id]);
-    return rows[0] || null;
-  }
+  values.push(id);
+  await db.query(
+    `UPDATE quizzes SET ${updates.join(', ')} WHERE id = ?`,
+    values
+  );
+  
+  return findById(id);
+};
 
-  async create(data) {
-    const { title, description, created_by_user_id, is_published, time_limit_minutes } = data;
-    const [result] = await db.query(
-      "INSERT INTO quizzes (title, description, created_by_user_id, is_published, time_limit_minutes) VALUES (?, ?, ?, ?, ?)",
-      [title, description || null, created_by_user_id, is_published || 0, time_limit_minutes || null]
-    );
-    return this.findById(result.insertId);
-  }
+const deleteQuiz = async (id) => {
+  const [result] = await db.query("DELETE FROM quizzes WHERE id = ?", [id]);
+  return result.affectedRows > 0;
+};
 
-  async update(id, data) {
-    const updates = [];
-    const values = [];
-    
-    for (const [key, value] of Object.entries(data)) {
-      updates.push(`${key} = ?`);
-      values.push(value);
-    }
-    
-    if (updates.length === 0) return this.findById(id);
+module.exports = {
+  findAll,
+  findById,
+  create,
+  update,
+  delete: deleteQuiz,
+};
 
-    values.push(id);
-    await db.query(
-      `UPDATE quizzes SET ${updates.join(', ')} WHERE id = ?`,
-      values
-    );
-    
-    return this.findById(id);
-  }
-
-  async delete(id) {
-    const [result] = await db.query("DELETE FROM quizzes WHERE id = ?", [id]);
-    return result.affectedRows > 0;
-  }
-}
-
-module.exports = new QuizRepository();

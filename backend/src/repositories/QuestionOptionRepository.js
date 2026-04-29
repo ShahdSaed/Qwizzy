@@ -1,49 +1,54 @@
 const { db } = require("../config/db");
 
-class QuestionOptionRepository {
-  async findAll() {
-    const [rows] = await db.query("SELECT * FROM question_options");
-    return rows;
+const findAll = async () => {
+  const [rows] = await db.query("SELECT * FROM question_options");
+  return rows;
+};
+
+const findById = async (id) => {
+  const [rows] = await db.query("SELECT * FROM question_options WHERE id = ?", [id]);
+  return rows[0] || null;
+};
+
+const create = async (data) => {
+  const { question_id, label, is_correct, sort_order } = data;
+  const [result] = await db.query(
+    "INSERT INTO question_options (question_id, label, is_correct, sort_order) VALUES (?, ?, ?, ?)",
+    [question_id, label, is_correct || 0, sort_order || 0]
+  );
+  return findById(result.insertId);
+};
+
+const update = async (id, data) => {
+  const updates = [];
+  const values = [];
+  
+  for (const [key, value] of Object.entries(data)) {
+    updates.push(`${key} = ?`);
+    values.push(value);
   }
+  
+  if (updates.length === 0) return findById(id);
 
-  async findById(id) {
-    const [rows] = await db.query("SELECT * FROM question_options WHERE id = ?", [id]);
-    return rows[0] || null;
-  }
+  values.push(id);
+  await db.query(
+    `UPDATE question_options SET ${updates.join(', ')} WHERE id = ?`,
+    values
+  );
+  
+  return findById(id);
+};
 
-  async create(data) {
-    const { question_id, label, is_correct, sort_order } = data;
-    const [result] = await db.query(
-      "INSERT INTO question_options (question_id, label, is_correct, sort_order) VALUES (?, ?, ?, ?)",
-      [question_id, label, is_correct || 0, sort_order || 0]
-    );
-    return this.findById(result.insertId);
-  }
+const deleteOption = async (id) => {
+  const [result] = await db.query("DELETE FROM question_options WHERE id = ?", [id]);
+  return result.affectedRows > 0;
+};
 
-  async update(id, data) {
-    const updates = [];
-    const values = [];
-    
-    for (const [key, value] of Object.entries(data)) {
-      updates.push(`${key} = ?`);
-      values.push(value);
-    }
-    
-    if (updates.length === 0) return this.findById(id);
+module.exports = {
+  findAll,
+  findById,
+  create,
+  update,
+  delete: deleteOption,
+};
 
-    values.push(id);
-    await db.query(
-      `UPDATE question_options SET ${updates.join(', ')} WHERE id = ?`,
-      values
-    );
-    
-    return this.findById(id);
-  }
-
-  async delete(id) {
-    const [result] = await db.query("DELETE FROM question_options WHERE id = ?", [id]);
-    return result.affectedRows > 0;
-  }
-}
-
-module.exports = new QuestionOptionRepository();
