@@ -23,8 +23,11 @@ router.post("/reset-password", validate(resetPasswordSchema), UserController.res
 
 // Protected routes (Authentication required)
 router.get("/", authenticate, authorizeAdmin, UserController.getAll);
+router.get("/stats", authenticate, UserController.getStats);
 router.get("/:id", authenticate, UserController.getById);
-router.put("/:id", authenticate, validate(updateUserSchema), UserController.update);
-router.delete("/:id", authenticate, authorizeAdmin, UserController.delete);
+router.put("/", authenticate, validate(updateUserSchema), UserController.update);
+router.delete("/", authenticate, authorizeAdmin, UserController.delete);
+
+
 
 module.exports = router;

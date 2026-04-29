@@ -30,8 +30,8 @@ const verifyEmail = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const { token } = await UserService.loginUser(email, password);
-    res.status(200).json({token });
+    const result = await UserService.loginUser(email, password);
+    res.status(200).json(result);
   } catch (error) {
     if (error.message === "Invalid email or password" || error.message === "Please verify your email before logging in") {
       return res.status(401).json({ message: error.message });
@@ -39,6 +39,7 @@ const login = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 const verifyForgotPasswordCode = async (req, res) => {
   try {
@@ -96,7 +97,7 @@ const getById = async (req, res) => {
 
 const update = async (req, res) => {
   try {
-    const user = await UserService.updateUser(req.params.id, req.body);
+    const user = await UserService.updateUser(req.user.id, req.body);
     res.status(200).json(UserDTO.fromEntity(user));
   } catch (error) {
     if (error.message === "User not found") {
@@ -108,8 +109,20 @@ const update = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    await UserService.deleteUser(req.params.id);
+    await UserService.deleteUser(req.user.id);
     res.status(204).send();
+  } catch (error) {
+    if (error.message === "User not found") {
+      return res.status(404).json({ message: error.message });
+    }
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getStats = async (req, res) => {
+  try {
+    const stats = await UserService.getUserStats(req.user.id);
+    res.status(200).json(stats);
   } catch (error) {
     if (error.message === "User not found") {
       return res.status(404).json({ message: error.message });
@@ -128,6 +141,8 @@ module.exports = {
   getAll,
   getById,
   update,
-  delete: deleteUser
+  delete: deleteUser,
+  getStats
 };
+
 

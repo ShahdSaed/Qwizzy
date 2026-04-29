@@ -32,13 +32,14 @@ const findByResetCode = async (email, code) => {
 };
 
 const create = async (data) => {
-  const { id, email, password_hash, full_name, role, verification_code } = data;
-  await db.query(
-    "INSERT INTO users (id, email, password_hash, full_name, role, verification_code) VALUES (?, ?, ?, ?, ?, ?)",
-    [id, email, password_hash, full_name, role || 'user', verification_code]
+  const { email, password_hash, full_name, role, verification_code } = data;
+  const [result] = await db.query(
+    "INSERT INTO users (email, password_hash, full_name, role, verification_code) VALUES (?, ?, ?, ?, ?)",
+    [email, password_hash, full_name, role || 'user', verification_code]
   );
-  return findById(id);
+  return findById(result.insertId);
 };
+
 
 const update = async (id, data) => {
   const updates = [];
@@ -65,6 +66,20 @@ const deleteUser = async (id) => {
   return result.affectedRows > 0;
 };
 
+const getStats = async (userId) => {
+  const query = `
+    SELECT 
+        COUNT(qa.id) as quizzes_completed,
+        ROUND(COALESCE(AVG(r.percentage), 0), 0) as average_score,
+        COALESCE(SUM(r.final_score), 0) as total_points
+    FROM quiz_attempts qa
+    LEFT JOIN results r ON qa.id = r.quiz_attempt_id
+    WHERE qa.user_id = ?
+  `;
+  const [rows] = await db.query(query, [userId]);
+  return rows[0];
+};
+
 module.exports = {
   findAll,
   findById,
@@ -74,5 +89,7 @@ module.exports = {
   create,
   update,
   delete: deleteUser,
+  getStats,
 };
+
 

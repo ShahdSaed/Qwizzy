@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const UserRepository = require("../repositories/UserRepository");
+const UserDTO = require("../dto/UserDTO");
 const { hashPassword, comparePassword } = require("../utils/passwordUtils");
 const { sendEmail, getEmailTemplate } = require("../utils/emailUtils");
 
@@ -25,7 +26,6 @@ const registerUser = async (data) => {
   const verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
   
   const userData = { 
-    id: uuidv4(),
     ...data, 
     password_hash: hashedPassword,
     verification_code: verificationCode
@@ -67,8 +67,11 @@ const loginUser = async (email, password) => {
   const { generateToken } = require("../utils/jwtUtils");
   const token = generateToken({ id: user.id, role: user.role , full_name: user.full_name, email: user.email });
 
-  return { token };
+  return { 
+    token
+  };
 };
+
 
 const forgotPassword = async (email) => {
   const user = await getUserByEmail(email);
@@ -137,6 +140,13 @@ const deleteUser = async (id) => {
   return success;
 };
 
+const getUserStats = async (userId) => {
+  const user = await UserRepository.findById(userId);
+  if (!user) throw new Error("User not found");
+  return await UserRepository.getStats(userId);
+};
+
+
 module.exports = {
   getAllUsers,
   getUserById,
@@ -149,5 +159,7 @@ module.exports = {
   resetPassword,
   updateUser,
   deleteUser,
+  getUserStats,
 };
+
 
