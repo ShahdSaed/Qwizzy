@@ -32,10 +32,10 @@ const findByResetCode = async (email, code) => {
 };
 
 const create = async (data) => {
-  const { email, password_hash, full_name, role, verification_code } = data;
+  const { id, email, password_hash, full_name, role, verification_code } = data;
   const [result] = await db.query(
-    "INSERT INTO users (email, password_hash, full_name, role, verification_code) VALUES (?, ?, ?, ?, ?)",
-    [email, password_hash, full_name, role || 'user', verification_code]
+    "INSERT INTO users (id, email, password_hash, full_name, role, verification_code) VALUES (?, ?, ?, ?, ?, ?)",
+    [id, email, password_hash, full_name, role || 'user', verification_code]
   );
   return findById(result.insertId);
 };

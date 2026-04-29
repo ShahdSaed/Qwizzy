@@ -26,6 +26,7 @@ const registerUser = async (data) => {
   const verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
   
   const userData = { 
+    id: uuidv4(),
     ...data, 
     password_hash: hashedPassword,
     verification_code: verificationCode

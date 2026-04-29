@@ -23,7 +23,7 @@ const getById = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    const quiz = await QuizService.createQuiz(req.body);
+    const quiz = await QuizService.createQuiz(req.body, req.user);
     res.status(201).json(quiz);
   } catch (error) {
     res.status(400).json({ message: error.message });
