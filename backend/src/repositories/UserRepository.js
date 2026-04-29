@@ -11,13 +11,35 @@ class UserRepository {
     return rows[0] || null;
   }
 
-  async create(data) {
-    const { email, password_hash, full_name, role } = data;
-    const [result] = await db.query(
-      "INSERT INTO users (email, password_hash, full_name, role) VALUES (?, ?, ?, ?)",
-      [email, password_hash, full_name, role || 'user']
+  async findByEmail(email) {
+    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    return rows[0] || null;
+  }
+
+  async findByVerificationCode(email, code) {
+    const [rows] = await db.query(
+      "SELECT * FROM users WHERE email = ? AND verification_code = ?",
+      [email, code]
     );
-    return this.findById(result.insertId);
+    return rows[0] || null;
+  }
+
+  
+  async findByResetCode(email, code) {
+  const [rows] = await db.query(
+    "SELECT * FROM users WHERE email = ? AND reset_password_code = ? AND reset_password_expires > NOW()",
+    [email, code]
+  );
+  return rows[0] || null;
+  }
+
+  async create(data) {
+    const { id, email, password_hash, full_name, role, verification_code } = data;
+    const [result] = await db.query(
+      "INSERT INTO users (id, email, password_hash, full_name, role, verification_code) VALUES (?, ?, ?, ?, ?, ?)",
+      [id, email, password_hash, full_name, role || 'user', verification_code]
+    );
+    return this.findById(id);
   }
 
   async update(id, data) {

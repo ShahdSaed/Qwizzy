@@ -1,14 +1,15 @@
 const UserService = require("../services/UserService");
 const UserDTO = require("../dto/UserDTO");
-const { generateToken } = require("../utils/jwtUtils");
 
 class UserController {
   async register(req, res) {
     try {
       const user = await UserService.registerUser(req.body);
       const userDTO = UserDTO.fromEntity(user);
-      const token = generateToken({ id: user.id, role: user.role });
-      res.status(201).json({ user: userDTO, token });
+      res.status(201).json({ 
+        message: "Registration successful! Please check your email for the verification code.",
+        user: userDTO 
+      });
     } catch (error) {
       if (error.message === "Email already exists") {
         return res.status(400).json({ message: error.message });
@@ -17,18 +18,59 @@ class UserController {
     }
   }
 
+  async verifyEmail(req, res) {
+    try {
+      const { email, code } = req.body;
+      const result = await UserService.verifyEmail(email, code);
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
   async login(req, res) {
     try {
       const { email, password } = req.body;
-      const user = await UserService.loginUser(email, password);
-      const userDTO = UserDTO.fromEntity(user);
-      const token = generateToken({ id: user.id, role: user.role });
-      res.status(200).json({ user: userDTO, token });
+      const { token } = await UserService.loginUser(email, password);
+      res.status(200).json({token });
     } catch (error) {
-      if (error.message === "Invalid email or password") {
+      if (error.message === "Invalid email or password" || error.message === "Please verify your email before logging in") {
         return res.status(401).json({ message: error.message });
       }
       res.status(500).json({ message: error.message });
+    }
+  }
+
+  async verifyForgotPasswordCode(req, res) {
+    try {
+      const { email, code } = req.body;
+      const result = await UserService.verifyForgotPasswordCode(email, code);
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  async forgotPassword(req, res) {
+    try {
+      const { email } = req.body;
+      const result = await UserService.forgotPassword(email);
+      res.status(200).json(result);
+    } catch (error) {
+      if (error.message === "User not found") {
+        return res.status(404).json({ message: error.message });
+      }
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  async resetPassword(req, res) {
+    try {
+      const { email, newPassword } = req.body;
+      const result = await UserService.resetPassword(email, newPassword);
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
     }
   }
 
