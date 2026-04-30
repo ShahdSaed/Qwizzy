@@ -9,7 +9,7 @@ const { quizCategorySchema } = require("../validators/quizCategoryValidator");
 router.post("/", authenticate, authorizeAdmin, validate(quizCategorySchema), QuizCategoryController.create);
 
 // Read All
-router.get("/", QuizCategoryController.getAll);
+router.get("/", authenticate, authorizeAdmin, QuizCategoryController.getAll);
 
 // Delete (Admin only)
 router.delete("/:quiz_id/:category_id", authenticate, authorizeAdmin, QuizCategoryController.delete);

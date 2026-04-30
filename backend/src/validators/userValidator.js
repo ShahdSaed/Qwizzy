@@ -4,7 +4,7 @@ const registerSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
   full_name: Joi.string().min(2).max(150).required(),
-  role: Joi.string().valid("user", "instructor", "admin").optional()
+  role: Joi.string().valid("user", "instructor").optional().default("user")
 });
 
 const loginSchema = Joi.object({
@@ -33,7 +33,7 @@ const verifyForgotPasswordCodeSchema = Joi.object({
 
 const updateUserSchema = Joi.object({
   full_name: Joi.string().min(2).max(150).optional(),
-  role: Joi.string().valid("user", "instructor", "admin").optional(),
+  role: Joi.string().valid("user", "instructor").optional().default("user"),
   password: Joi.string().min(6).optional()
 });
 

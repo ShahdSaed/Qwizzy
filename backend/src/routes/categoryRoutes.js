@@ -8,11 +8,11 @@ const { categorySchema } = require("../validators/categoryValidator");
 // Create (Admin only)
 router.post("/", authenticate, authorizeAdmin, validate(categorySchema), CategoryController.create);
 
-// Read All (Public or Authenticated depending on your preference, here Public)
-router.get("/", CategoryController.getAll);
+// Read All (Admin only)
+router.get("/", authenticate, authorizeAdmin, CategoryController.getAll);
 
 // Read One
-router.get("/:id", CategoryController.getById);
+router.get("/:id", authenticate, authorizeAdmin, CategoryController.getById);
 
 // Update (Admin only)
 router.put("/:id", authenticate, authorizeAdmin, validate(categorySchema), CategoryController.update);
