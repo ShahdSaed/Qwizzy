@@ -1,21 +1,21 @@
 const { db } = require("../config/db");
 
-const findAll = async () => {
+exports.findAll = async () => {
   const [rows] = await db.query("SELECT * FROM users");
   return rows;
 };
 
-const findById = async (id) => {
+exports.findById = async (id) => {
   const [rows] = await db.query("SELECT * FROM users WHERE id = ?", [id]);
   return rows[0] || null;
 };
 
-const findByEmail = async (email) => {
+exports.findByEmail = async (email) => {
   const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
   return rows[0] || null;
 };
 
-const findByVerificationCode = async (email, code) => {
+exports.findByVerificationCode = async (email, code) => {
   const [rows] = await db.query(
     "SELECT * FROM users WHERE email = ? AND verification_code = ?",
     [email, code]
@@ -23,7 +23,7 @@ const findByVerificationCode = async (email, code) => {
   return rows[0] || null;
 };
 
-const findByResetCode = async (email, code) => {
+exports.findByResetCode = async (email, code) => {
   const [rows] = await db.query(
     "SELECT * FROM users WHERE email = ? AND reset_password_code = ? AND reset_password_expires > NOW()",
     [email, code]
@@ -31,7 +31,7 @@ const findByResetCode = async (email, code) => {
   return rows[0] || null;
 };
 
-const create = async (data) => {
+exports.create = async (data) => {
   const { id, email, password_hash, full_name, role, verification_code } = data;
   await db.query(
     "INSERT INTO users (id, email, password_hash, full_name, role, verification_code) VALUES (?, ?, ?, ?, ?, ?)",
@@ -42,7 +42,7 @@ const create = async (data) => {
 
 
 
-const update = async (id, data) => {
+exports.update = async (id, data) => {
   const updates = [];
   const values = [];
   
@@ -62,12 +62,12 @@ const update = async (id, data) => {
   return findById(id);
 };
 
-const deleteUser = async (id) => {
+exports.delete = async (id) => {
   const [result] = await db.query("DELETE FROM users WHERE id = ?", [id]);
   return result.affectedRows > 0;
 };
 
-const getStats = async (userId) => {
+exports.getStats = async (userId) => {
   const query = `
     SELECT 
         COUNT(qa.id) as quizzes_completed,
@@ -79,18 +79,6 @@ const getStats = async (userId) => {
   `;
   const [rows] = await db.query(query, [userId]);
   return rows[0];
-};
-
-module.exports = {
-  findAll,
-  findById,
-  findByEmail,
-  findByVerificationCode,
-  findByResetCode,
-  create,
-  update,
-  delete: deleteUser,
-  getStats,
 };
 
 

@@ -1,16 +1,16 @@
 const { db } = require("../config/db");
 
-const findAll = async () => {
+exports.findAll = async () => {
   const [rows] = await db.query("SELECT * FROM quiz_attempts");
   return rows;
 };
 
-const findById = async (id) => {
+exports.findById = async (id) => {
   const [rows] = await db.query("SELECT * FROM quiz_attempts WHERE id = ?", [id]);
   return rows[0] || null;
 };
 
-const create = async (data) => {
+exports.create = async (data) => {
   const { id, user_id, quiz_id, submitted_at, score, max_score } = data;
   await db.query(
     "INSERT INTO quiz_attempts (id, user_id, quiz_id, submitted_at, score, max_score) VALUES (?, ?, ?, ?, ?, ?)",
@@ -19,7 +19,7 @@ const create = async (data) => {
   return findById(id);
 };
 
-const update = async (id, data) => {
+exports.update = async (id, data) => {
   const updates = [];
   const values = [];
   
@@ -39,16 +39,7 @@ const update = async (id, data) => {
   return findById(id);
 };
 
-const deleteAttempt = async (id) => {
+exports.delete = async (id) => {
   const [result] = await db.query("DELETE FROM quiz_attempts WHERE id = ?", [id]);
   return result.affectedRows > 0;
 };
-
-module.exports = {
-  findAll,
-  findById,
-  create,
-  update,
-  delete: deleteAttempt,
-};
-

@@ -1,43 +1,36 @@
 const QuestionRepository = require("../repositories/QuestionRepository");
 const { v4: uuid } = require("uuid");
-const getAllQuestions = async () => {
+const AppError = require("../utils/AppError");
+
+exports.getAll = async () => {
   return await QuestionRepository.findAll();
 };
 
-const getQuestionById = async (id) => {
+exports.findById = async (id) => {
   const question = await QuestionRepository.findById(id);
   if (!question) {
-    throw new Error("Question not found");
+    throw new AppError("Question not found", 404);
   }
   return question;
 };
 
-const createQuestion = async (data) => {
+exports.create = async (data) => {
   data.id = uuid();
   return await QuestionRepository.create(data);
 };
 
-const updateQuestion = async (id, data) => {
+exports.update = async (id, data) => {
   const updatedQuestion = await QuestionRepository.update(id, data);
   if (!updatedQuestion) {
-    throw new Error("Question not found");
+    throw new AppError("Question not found", 404);
   }
   return updatedQuestion;
 };
 
-const deleteQuestion = async (id) => {
+exports.delete = async (id) => {
   const success = await QuestionRepository.delete(id);
   if (!success) {
-    throw new Error("Question not found");
+    throw new AppError("Question not found", 404);
   }
   return success;
 };
-
-module.exports = {
-  getAllQuestions,
-  getQuestionById,
-  createQuestion,
-  updateQuestion,
-  deleteQuestion,
-};
-

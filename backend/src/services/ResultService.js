@@ -1,44 +1,36 @@
 const ResultRepository = require("../repositories/ResultRepository");
 const { v4: uuid } = require("uuid");
-const getAllResults = async () => {
+const AppError = require("../utils/AppError");
+
+exports.getAll = async () => {
   return await ResultRepository.findAll();
 };
 
-const getResultById = async (id) => {
+exports.findById = async (id) => {
   const result = await ResultRepository.findById(id);
   if (!result) {
-    throw new Error("Result not found");
+    throw new AppError("Result not found", 404);
   }
   return result;
 };
 
-const createResult = async (data) => {
+exports.create = async (data) => {
   data.id = uuid();
   return await ResultRepository.create(data);
 };
 
-
-const updateResult = async (id, data) => {
+exports.update = async (id, data) => {
   const updatedResult = await ResultRepository.update(id, data);
   if (!updatedResult) {
-    throw new Error("Result not found");
+    throw new AppError("Result not found", 404);
   }
   return updatedResult;
 };
 
-const deleteResult = async (id) => {
+exports.delete = async (id) => {
   const success = await ResultRepository.delete(id);
   if (!success) {
-    throw new Error("Result not found");
+    throw new AppError("Result not found", 404);
   }
   return success;
 };
-
-module.exports = {
-  getAllResults,
-  getResultById,
-  createResult,
-  updateResult,
-  deleteResult,
-};
-

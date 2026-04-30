@@ -1,64 +1,27 @@
 const AttemptAnswerService = require("../services/AttemptAnswerService");
+const asyncHandler = require("../utils/asyncHandler");
 
-const getAll = async (req, res) => {
-  try {
-    const answers = await AttemptAnswerService.getAllAnswers();
-    res.status(200).json(answers);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+exports.getAll = asyncHandler(async (req, res) => {
+  const answers = await AttemptAnswerService.getAll();
+  res.status(200).json({ success: true, data: answers });
+});
 
-const getById = async (req, res) => {
-  try {
-    const answer = await AttemptAnswerService.getAnswerById(req.params.id);
-    res.status(200).json(answer);
-  } catch (error) {
-    if (error.message === "Attempt answer not found") {
-      return res.status(404).json({ message: error.message });
-    }
-    res.status(500).json({ message: error.message });
-  }
-};
+exports.getById = asyncHandler(async (req, res) => {
+  const answer = await AttemptAnswerService.findById(req.params.id);
+  res.status(200).json({ success: true, data: answer });
+});
 
-const create = async (req, res) => {
-  try {
-    const answer = await AttemptAnswerService.createAnswer(req.body);
-    res.status(201).json(answer);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+exports.create = asyncHandler(async (req, res) => {
+  const answer = await AttemptAnswerService.create(req.body);
+  res.status(201).json({ success: true, data: answer });
+});
 
-const update = async (req, res) => {
-  try {
-    const answer = await AttemptAnswerService.updateAnswer(req.params.id, req.body);
-    res.status(200).json(answer);
-  } catch (error) {
-    if (error.message === "Attempt answer not found") {
-      return res.status(404).json({ message: error.message });
-    }
-    res.status(400).json({ message: error.message });
-  }
-};
+exports.update = asyncHandler(async (req, res) => {
+  const answer = await AttemptAnswerService.update(req.params.id, req.body);
+  res.status(200).json({ success: true, data: answer });
+});
 
-const deleteAnswer = async (req, res) => {
-  try {
-    await AttemptAnswerService.deleteAnswer(req.params.id);
-    res.status(204).send();
-  } catch (error) {
-    if (error.message === "Attempt answer not found") {
-      return res.status(404).json({ message: error.message });
-    }
-    res.status(500).json({ message: error.message });
-  }
-};
-
-module.exports = {
-  getAll,
-  getById,
-  create,
-  update,
-  delete: deleteAnswer
-};
-
+exports.delete = asyncHandler(async (req, res) => {
+  await AttemptAnswerService.delete(req.params.id);
+  res.status(204).send();
+});

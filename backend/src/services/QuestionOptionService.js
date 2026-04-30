@@ -1,44 +1,36 @@
 const QuestionOptionRepository = require("../repositories/QuestionOptionRepository");
 const { v4: uuid } = require("uuid");
+const AppError = require("../utils/AppError");
 
-const getAllOptions = async () => {
+exports.getAll = async () => {
   return await QuestionOptionRepository.findAll();
 };
 
-const getOptionById = async (id) => {
+exports.findById = async (id) => {
   const option = await QuestionOptionRepository.findById(id);
   if (!option) {
-    throw new Error("Question option not found");
+    throw new AppError("Question option not found", 404);
   }
   return option;
 };
 
-const createOption = async (data) => {
+exports.create = async (data) => {
   data.id = uuid();
   return await QuestionOptionRepository.create(data);
 };
 
-const updateOption = async (id, data) => {
+exports.update = async (id, data) => {
   const updatedOption = await QuestionOptionRepository.update(id, data);
   if (!updatedOption) {
-    throw new Error("Question option not found");
+    throw new AppError("Question option not found", 404);
   }
   return updatedOption;
 };
 
-const deleteOption = async (id) => {
+exports.delete = async (id) => {
   const success = await QuestionOptionRepository.delete(id);
   if (!success) {
-    throw new Error("Question option not found");
+    throw new AppError("Question option not found", 404);
   }
   return success;
 };
-
-module.exports = {
-  getAllOptions,
-  getOptionById,
-  createOption,
-  updateOption,
-  deleteOption,
-};
-

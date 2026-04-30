@@ -1,148 +1,66 @@
 const UserService = require("../services/UserService");
 const UserDTO = require("../dto/UserDTO");
+const asyncHandler = require("../utils/asyncHandler");
 
-const register = async (req, res) => {
-  try {
-    const user = await UserService.registerUser(req.body);
-    const userDTO = UserDTO.fromEntity(user);
-    res.status(201).json({ 
-      message: "Registration successful! Please check your email for the verification code.",
-      user: userDTO 
-    });
-  } catch (error) {
-    if (error.message === "Email already exists") {
-      return res.status(400).json({ message: error.message });
-    }
-    res.status(500).json({ message: error.message });
-  }
-};
+exports.register = asyncHandler(async (req, res) => {
+  const user = await UserService.register(req.body);
+  res.status(201).json({
+    success: true,
+    data: UserDTO.fromEntity(user),
+  });
+});
 
-const verifyEmail = async (req, res) => {
-  try {
-    const { email, code } = req.body;
-    const result = await UserService.verifyEmail(email, code);
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+exports.verifyEmail = asyncHandler(async (req, res) => {
+  const { email, code } = req.body;
+  const result = await UserService.verifyEmail(email, code);
+  res.status(200).json({ success: true, ...result });
+});
 
-const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const result = await UserService.loginUser(email, password);
-    res.status(200).json(result);
-  } catch (error) {
-    if (error.message === "Invalid email or password" || error.message === "Please verify your email before logging in") {
-      return res.status(401).json({ message: error.message });
-    }
-    res.status(500).json({ message: error.message });
-  }
-};
+exports.login = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  const result = await UserService.login(email, password);
+  res.status(200).json({ success: true, ...result });
+});
 
+exports.verifyForgotPasswordCode = asyncHandler(async (req, res) => {
+  const { email, code } = req.body;
+  const result = await UserService.verifyForgotPasswordCode(email, code);
+  res.status(200).json({ success: true, ...result });
+});
 
-const verifyForgotPasswordCode = async (req, res) => {
-  try {
-    const { email, code } = req.body;
-    const result = await UserService.verifyForgotPasswordCode(email, code);
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+exports.forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const result = await UserService.forgotPassword(email);
+  res.status(200).json({ success: true, ...result });
+});
 
-const forgotPassword = async (req, res) => {
-  try {
-    const { email } = req.body;
-    const result = await UserService.forgotPassword(email);
-    res.status(200).json(result);
-  } catch (error) {
-    if (error.message === "User not found") {
-      return res.status(404).json({ message: error.message });
-    }
-    res.status(500).json({ message: error.message });
-  }
-};
+exports.resetPassword = asyncHandler(async (req, res) => {
+  const { email, newPassword } = req.body;
+  const result = await UserService.resetPassword(email, newPassword);
+  res.status(200).json({ success: true, ...result });
+});
 
-const resetPassword = async (req, res) => {
-  try {
-    const { email, newPassword } = req.body;
-    const result = await UserService.resetPassword(email, newPassword);
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+exports.getAll = asyncHandler(async (req, res) => {
+  const users = await UserService.getAll();
+  res.status(200).json({ success: true, data: UserDTO.fromEntityList(users) });
+});
 
-const getAll = async (req, res) => {
-  try {
-    const users = await UserService.getAllUsers();
-    res.status(200).json(UserDTO.fromEntityList(users));
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+exports.getById = asyncHandler(async (req, res) => {
+  const user = await UserService.findById(req.params.id);
+  res.status(200).json({ success: true, data: UserDTO.fromEntity(user) });
+});
 
-const getById = async (req, res) => {
-  try {
-    const user = await UserService.getUserById(req.params.id);
-    res.status(200).json(UserDTO.fromEntity(user));
-  } catch (error) {
-    if (error.message === "User not found") {
-      return res.status(404).json({ message: error.message });
-    }
-    res.status(500).json({ message: error.message });
-  }
-};
+exports.update = asyncHandler(async (req, res) => {
+  const user = await UserService.update(req.user.id, req.body);
+  res.status(200).json({ success: true, data: UserDTO.fromEntity(user) });
+});
 
-const update = async (req, res) => {
-  try {
-    const user = await UserService.updateUser(req.user.id, req.body);
-    res.status(200).json(UserDTO.fromEntity(user));
-  } catch (error) {
-    if (error.message === "User not found") {
-      return res.status(404).json({ message: error.message });
-    }
-    res.status(400).json({ message: error.message });
-  }
-};
+exports.delete = asyncHandler(async (req, res) => {
+  await UserService.delete(req.user.id);
+  res.status(204).send();
+});
 
-const deleteUser = async (req, res) => {
-  try {
-    await UserService.deleteUser(req.user.id);
-    res.status(204).send();
-  } catch (error) {
-    if (error.message === "User not found") {
-      return res.status(404).json({ message: error.message });
-    }
-    res.status(500).json({ message: error.message });
-  }
-};
-
-const getStats = async (req, res) => {
-  try {
-    const stats = await UserService.getUserStats(req.user.id);
-    res.status(200).json(stats);
-  } catch (error) {
-    if (error.message === "User not found") {
-      return res.status(404).json({ message: error.message });
-    }
-    res.status(500).json({ message: error.message });
-  }
-};
-
-module.exports = {
-  register,
-  verifyEmail,
-  login,
-  verifyForgotPasswordCode,
-  forgotPassword,
-  resetPassword,
-  getAll,
-  getById,
-  update,
-  delete: deleteUser,
-  getStats
-};
-
-
+exports.getStats = asyncHandler(async (req, res) => {
+  const stats = await UserService.getStats(req.user.id);
+  res.status(200).json({ success: true, data: stats });
+});

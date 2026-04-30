@@ -1,64 +1,27 @@
 const QuestionService = require("../services/QuestionService");
+const asyncHandler = require("../utils/asyncHandler");
 
-const getAll = async (req, res) => {
-  try {
-    const questions = await QuestionService.getAllQuestions();
-    res.status(200).json(questions);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+exports.getAll = asyncHandler(async (req, res) => {
+  const questions = await QuestionService.getAll();
+  res.status(200).json({ success: true, data: questions });
+});
 
-const getById = async (req, res) => {
-  try {
-    const question = await QuestionService.getQuestionById(req.params.id);
-    res.status(200).json(question);
-  } catch (error) {
-    if (error.message === "Question not found") {
-      return res.status(404).json({ message: error.message });
-    }
-    res.status(500).json({ message: error.message });
-  }
-};
+exports.getById = asyncHandler(async (req, res) => {
+  const question = await QuestionService.findById(req.params.id);
+  res.status(200).json({ success: true, data: question });
+});
 
-const create = async (req, res) => {
-  try {
-    const question = await QuestionService.createQuestion(req.body);
-    res.status(201).json(question);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+exports.create = asyncHandler(async (req, res) => {
+  const question = await QuestionService.create(req.body);
+  res.status(201).json({ success: true, data: question });
+});
 
-const update = async (req, res) => {
-  try {
-    const question = await QuestionService.updateQuestion(req.params.id, req.body);
-    res.status(200).json(question);
-  } catch (error) {
-    if (error.message === "Question not found") {
-      return res.status(404).json({ message: error.message });
-    }
-    res.status(400).json({ message: error.message });
-  }
-};
+exports.update = asyncHandler(async (req, res) => {
+  const question = await QuestionService.update(req.params.id, req.body);
+  res.status(200).json({ success: true, data: question });
+});
 
-const deleteQuestion = async (req, res) => {
-  try {
-    await QuestionService.deleteQuestion(req.params.id);
-    res.status(204).send();
-  } catch (error) {
-    if (error.message === "Question not found") {
-      return res.status(404).json({ message: error.message });
-    }
-    res.status(500).json({ message: error.message });
-  }
-};
-
-module.exports = {
-  getAll,
-  getById,
-  create,
-  update,
-  delete: deleteQuestion
-};
-
+exports.delete = asyncHandler(async (req, res) => {
+  await QuestionService.delete(req.params.id);
+  res.status(204).send();
+});
