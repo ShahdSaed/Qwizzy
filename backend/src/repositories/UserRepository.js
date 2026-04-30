@@ -33,12 +33,13 @@ const findByResetCode = async (email, code) => {
 
 const create = async (data) => {
   const { id, email, password_hash, full_name, role, verification_code } = data;
-  const [result] = await db.query(
+  await db.query(
     "INSERT INTO users (id, email, password_hash, full_name, role, verification_code) VALUES (?, ?, ?, ?, ?, ?)",
     [id, email, password_hash, full_name, role || 'user', verification_code]
   );
-  return findById(result.insertId);
+  return findById(id);
 };
+
 
 
 const update = async (id, data) => {

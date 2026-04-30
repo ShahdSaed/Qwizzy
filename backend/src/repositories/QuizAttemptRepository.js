@@ -11,12 +11,12 @@ const findById = async (id) => {
 };
 
 const create = async (data) => {
-  const { user_id, quiz_id, submitted_at, score, max_score } = data;
-  const [result] = await db.query(
-    "INSERT INTO quiz_attempts (user_id, quiz_id, submitted_at, score, max_score) VALUES (?, ?, ?, ?, ?)",
-    [user_id, quiz_id, submitted_at || null, score || null, max_score || null]
+  const { id, user_id, quiz_id, submitted_at, score, max_score } = data;
+  await db.query(
+    "INSERT INTO quiz_attempts (id, user_id, quiz_id, submitted_at, score, max_score) VALUES (?, ?, ?, ?, ?, ?)",
+    [id, user_id, quiz_id, submitted_at || null, score || null, max_score || null]
   );
-  return findById(result.insertId);
+  return findById(id);
 };
 
 const update = async (id, data) => {

@@ -11,12 +11,12 @@ const findById = async (id) => {
 };
 
 const create = async (data) => {
-  const { question_id, label, is_correct, sort_order } = data;
-  const [result] = await db.query(
-    "INSERT INTO question_options (question_id, label, is_correct, sort_order) VALUES (?, ?, ?, ?)",
-    [question_id, label, is_correct || 0, sort_order || 0]
+  const { id, question_id, label, is_correct, sort_order } = data;
+  await db.query(
+    "INSERT INTO question_options (id, question_id, label, is_correct, sort_order) VALUES (?, ?, ?, ?, ?)",
+    [id, question_id, label, is_correct || 0, sort_order || 0]
   );
-  return findById(result.insertId);
+  return findById(id);
 };
 
 const update = async (id, data) => {

@@ -17,15 +17,9 @@ const createQuiz = async (data, user) => {
   if (!data.title || !user.id) {
     throw new Error("Title and creator ID are required");
   }
-  return await QuizRepository.create({
-    id: uuid(),
-    title: data.title,
-    description: data.description,
-    created_by_user_id: user.id,
-    is_published: data.is_published || false,
-    time_limit_minutes: data.time_limit_minutes || null,
-    difficulty: data.difficulty || 'medium'
-  });
+  data.id = uuid();
+  data.created_by_user_id = user.id;
+  return await QuizRepository.create(data);
 };
 
 
@@ -42,7 +36,7 @@ const deleteQuiz = async (id) => {
   if (!success) {
     throw new Error("Quiz not found");
   }
-  return success;
+  return {success, message: "Quiz deleted successfully"};
 };
 
 module.exports = {

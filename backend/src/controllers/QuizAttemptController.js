@@ -23,7 +23,7 @@ const getById = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    const attempt = await QuizAttemptService.createAttempt(req.body);
+    const attempt = await QuizAttemptService.createAttempt(req.body, req.user);
     res.status(201).json(attempt);
   } catch (error) {
     res.status(400).json({ message: error.message });

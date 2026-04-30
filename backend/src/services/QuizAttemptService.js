@@ -1,5 +1,5 @@
 const QuizAttemptRepository = require("../repositories/QuizAttemptRepository");
-
+const { v4: uuid } = require("uuid");
 const getAllAttempts = async () => {
   return await QuizAttemptRepository.findAll();
 };
@@ -12,7 +12,9 @@ const getAttemptById = async (id) => {
   return attempt;
 };
 
-const createAttempt = async (data) => {
+const createAttempt = async (data, user) => {
+  data.id = uuid();
+  data.user_id = user.id;
   return await QuizAttemptRepository.create(data);
 };
 

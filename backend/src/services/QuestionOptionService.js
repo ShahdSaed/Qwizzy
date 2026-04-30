@@ -1,4 +1,5 @@
 const QuestionOptionRepository = require("../repositories/QuestionOptionRepository");
+const { v4: uuid } = require("uuid");
 
 const getAllOptions = async () => {
   return await QuestionOptionRepository.findAll();
@@ -13,6 +14,7 @@ const getOptionById = async (id) => {
 };
 
 const createOption = async (data) => {
+  data.id = uuid();
   return await QuestionOptionRepository.create(data);
 };
 

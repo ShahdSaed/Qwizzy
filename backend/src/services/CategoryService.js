@@ -1,5 +1,5 @@
 const CategoryRepository = require("../repositories/CategoryRepository");
-
+const { v4: uuid } = require("uuid");
 const getAllCategories = async () => {
   return await CategoryRepository.findAll();
 };
@@ -16,6 +16,7 @@ const createCategory = async (data) => {
   if (!data.name) {
     throw new Error("Category name is required");
   }
+  data.id = uuid();
   return await CategoryRepository.create(data);
 };
 

@@ -1,5 +1,5 @@
 const ResultRepository = require("../repositories/ResultRepository");
-
+const { v4: uuid } = require("uuid");
 const getAllResults = async () => {
   return await ResultRepository.findAll();
 };
@@ -13,8 +13,10 @@ const getResultById = async (id) => {
 };
 
 const createResult = async (data) => {
+  data.id = uuid();
   return await ResultRepository.create(data);
 };
+
 
 const updateResult = async (id, data) => {
   const updatedResult = await ResultRepository.update(id, data);

@@ -1,5 +1,5 @@
 const AttemptAnswerRepository = require("../repositories/AttemptAnswerRepository");
-
+const { v4: uuid } = require("uuid");
 const getAllAnswers = async () => {
   return await AttemptAnswerRepository.findAll();
 };
@@ -13,6 +13,7 @@ const getAnswerById = async (id) => {
 };
 
 const createAnswer = async (data) => {
+  data.id = uuid();
   return await AttemptAnswerRepository.create(data);
 };
 

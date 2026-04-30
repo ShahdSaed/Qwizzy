@@ -1,5 +1,5 @@
 const QuestionRepository = require("../repositories/QuestionRepository");
-
+const { v4: uuid } = require("uuid");
 const getAllQuestions = async () => {
   return await QuestionRepository.findAll();
 };
@@ -13,6 +13,7 @@ const getQuestionById = async (id) => {
 };
 
 const createQuestion = async (data) => {
+  data.id = uuid();
   return await QuestionRepository.create(data);
 };
 
