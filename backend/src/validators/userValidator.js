@@ -33,7 +33,7 @@ const verifyForgotPasswordCodeSchema = Joi.object({
 
 const updateUserSchema = Joi.object({
   full_name: Joi.string().min(2).max(150).optional(),
-  role: Joi.string().valid("user", "instructor").optional().default("user"),
+  //role: Joi.string().valid("user", "instructor").optional().default("user"),
   password: Joi.string().min(6).optional()
 });
 

@@ -16,7 +16,8 @@ exports.create = async (data) => {
     "INSERT INTO questions (id,quiz_id, question_type, body, points, sort_order) VALUES (?, ?, ?, ?, ?, ?)",
     [id,quiz_id, question_type, body, points || 1.00, sort_order || 0]
   );
-  return findById(id);
+  return exports.findById(id);
+
 };
 
 exports.update = async (id, data) => {
@@ -28,7 +29,8 @@ exports.update = async (id, data) => {
     values.push(value);
   }
   
-  if (updates.length === 0) return findById(id);
+  if (updates.length === 0) return exports.findById(id);
+
 
   values.push(id);
   await db.query(
@@ -36,7 +38,8 @@ exports.update = async (id, data) => {
     values
   );
   
-  return findById(id);
+  return exports.findById(id);
+
 };
 
 exports.delete = async (id) => {

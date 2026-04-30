@@ -26,7 +26,7 @@ router.get("/", authenticate, authorizeAdmin, UserController.getAll);
 router.get("/stats", authenticate, UserController.getStats);
 router.get("/:id", authenticate, UserController.getById);
 router.put("/", authenticate, validate(updateUserSchema), UserController.update);
-router.delete("/", authenticate, authorizeAdmin, UserController.delete);
+router.delete("/:id", authenticate, authorizeAdmin, UserController.delete);
 
 
 

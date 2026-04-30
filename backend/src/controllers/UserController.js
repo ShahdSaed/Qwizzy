@@ -56,8 +56,8 @@ exports.update = asyncHandler(async (req, res) => {
 });
 
 exports.delete = asyncHandler(async (req, res) => {
-  await UserService.delete(req.user.id);
-  res.status(204).send();
+  await UserService.delete(req.params.id);
+  res.status(204).send({message: "User deleted successfully"});
 });
 
 exports.getStats = asyncHandler(async (req, res) => {

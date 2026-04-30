@@ -37,7 +37,8 @@ exports.create = async (data) => {
     "INSERT INTO users (id, email, password_hash, full_name, role, verification_code) VALUES (?, ?, ?, ?, ?, ?)",
     [id, email, password_hash, full_name, role || 'user', verification_code]
   );
-  return findById(id);
+  return exports.findById(id);
+
 };
 
 
@@ -59,7 +60,8 @@ exports.update = async (id, data) => {
     values
   );
   
-  return findById(id);
+  return exports.findById(id);
+
 };
 
 exports.delete = async (id) => {

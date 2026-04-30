@@ -16,7 +16,8 @@ exports.create = async (data) => {
     "INSERT INTO quiz_categories (quiz_id, category_id) VALUES (?, ?)",
     [quiz_id, category_id]
   );
-  return findByIds(quiz_id, category_id);
+  return exports.findByIds(quiz_id, category_id);
+
 };
 
 exports.delete = async (quiz_id, category_id) => {

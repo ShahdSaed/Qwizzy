@@ -16,7 +16,8 @@ exports.create = async (data) => {
     "INSERT INTO quizzes (id, title, description, created_by_user_id, is_published, time_limit_minutes, difficulty) VALUES (?, ?, ?, ?, ?, ?, ?)",
     [id, title, description || null, created_by_user_id, is_published || 0, time_limit_minutes || null, difficulty || 'medium']
   );
-  return findById(id);
+  return exports.findById(id);
+
 };
 
 exports.update = async (id, data) => {
@@ -28,7 +29,8 @@ exports.update = async (id, data) => {
     values.push(value);
   }
   
-  if (updates.length === 0) return findById(id);
+  if (updates.length === 0) return exports.findById(id);
+
 
   values.push(id);
   await db.query(
@@ -36,7 +38,8 @@ exports.update = async (id, data) => {
     values
   );
   
-  return findById(id);
+  return exports.findById(id);
+
 };
 
 exports.delete = async (id) => {
