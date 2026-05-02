@@ -10,6 +10,12 @@ exports.findById = async (id) => {
   return rows[0] || null;
 };
 
+
+exports.findByQuizId = async (quiz_id) => {
+  const [rows] = await db.query("SELECT * FROM questions WHERE quiz_id = ?", [quiz_id]);
+  return rows;
+};
+
 exports.create = async (data) => {
   const { id,quiz_id, question_type, body, points, sort_order } = data;
   await db.query(
