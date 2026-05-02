@@ -27,6 +27,7 @@ app.use("/api/quiz-attempts", quizAttemptRoutes);
 app.use("/api/attempt-answers", attemptAnswerRoutes);
 app.use("/api/results", resultRoutes);
 app.use("/api/quiz-categories", quizCategoryRoutes);
+app.use("/api/quiz/:quiz_id/questions", questionRoutes);
 
 app.get("/", (req, res) => {
   res.json({
@@ -37,4 +38,4 @@ app.get("/", (req, res) => {
 // Error Handling Middleware
 app.use(errorHandler);
 
-module.exports = app;
+module.exports = app;

@@ -1,7 +1,12 @@
 const { db } = require("../config/db");
 
 exports.findAll = async () => {
-  const [rows] = await db.query("SELECT * FROM quizzes");
+  const [rows] = await db.query(`
+    SELECT q.*, COUNT(qs.id) as questions_count 
+    FROM quizzes q 
+    LEFT JOIN questions qs ON q.id = qs.quiz_id 
+    GROUP BY q.id
+  `);
   return rows;
 };
 

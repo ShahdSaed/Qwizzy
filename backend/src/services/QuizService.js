@@ -3,9 +3,12 @@ const { v4: uuid } = require("uuid");
 const AppError = require("../utils/AppError");
 
 exports.getAll = async () => {
-  return await QuizRepository.findAll();
+  const quizzes = await QuizRepository.findAll();
+  return await Promise.all(quizzes.map(async (quiz) => {
+    const questions = await QuestionRepository.findByQuizId(quiz.id);
+    return { ...quiz, questions };
+  }));
 };
-
 exports.findById = async (id) => {
   const quiz = await QuizRepository.findById(id);
   if (!quiz) {
