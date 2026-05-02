@@ -1,49 +1,86 @@
 const { db } = require("../config/db");
 
-class UserRepository {
-  async findAll() {
-    const [rows] = await db.query("SELECT * FROM users");
-    return rows;
+exports.findAll = async () => {
+  const [rows] = await db.query("SELECT * FROM users");
+  return rows;
+};
+
+exports.findById = async (id) => {
+  const [rows] = await db.query("SELECT * FROM users WHERE id = ?", [id]);
+  return rows[0] || null;
+};
+
+exports.findByEmail = async (email) => {
+  const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+  return rows[0] || null;
+};
+
+exports.findByVerificationCode = async (email, code) => {
+  const [rows] = await db.query(
+    "SELECT * FROM users WHERE email = ? AND verification_code = ?",
+    [email, code]
+  );
+  return rows[0] || null;
+};
+
+exports.findByResetCode = async (email, code) => {
+  const [rows] = await db.query(
+    "SELECT * FROM users WHERE email = ? AND reset_password_code = ? AND reset_password_expires > NOW()",
+    [email, code]
+  );
+  return rows[0] || null;
+};
+
+exports.create = async (data) => {
+  const { id, email, password_hash, full_name, role, verification_code } = data;
+  await db.query(
+    "INSERT INTO users (id, email, password_hash, full_name, role, verification_code) VALUES (?, ?, ?, ?, ?, ?)",
+    [id, email, password_hash, full_name, role || 'user', verification_code]
+  );
+  return exports.findById(id);
+
+};
+
+
+
+exports.update = async (id, data) => {
+  const updates = [];
+  const values = [];
+  
+  for (const [key, value] of Object.entries(data)) {
+    updates.push(`${key} = ?`);
+    values.push(value);
   }
+  
+  if (updates.length === 0) return findById(id);
 
-  async findById(id) {
-    const [rows] = await db.query("SELECT * FROM users WHERE id = ?", [id]);
-    return rows[0] || null;
-  }
+  values.push(id);
+  await db.query(
+    `UPDATE users SET ${updates.join(', ')} WHERE id = ?`,
+    values
+  );
+  
+  return exports.findById(id);
 
-  async create(data) {
-    const { email, password_hash, full_name, role } = data;
-    const [result] = await db.query(
-      "INSERT INTO users (email, password_hash, full_name, role) VALUES (?, ?, ?, ?)",
-      [email, password_hash, full_name, role || 'user']
-    );
-    return this.findById(result.insertId);
-  }
+};
 
-  async update(id, data) {
-    const updates = [];
-    const values = [];
-    
-    for (const [key, value] of Object.entries(data)) {
-      updates.push(`${key} = ?`);
-      values.push(value);
-    }
-    
-    if (updates.length === 0) return this.findById(id);
+exports.delete = async (id) => {
+  const [result] = await db.query("DELETE FROM users WHERE id = ?", [id]);
+  return result.affectedRows > 0;
+};
 
-    values.push(id);
-    await db.query(
-      `UPDATE users SET ${updates.join(', ')} WHERE id = ?`,
-      values
-    );
-    
-    return this.findById(id);
-  }
+exports.getStats = async (userId) => {
+  const query = `
+    SELECT 
+        COUNT(qa.id) as quizzes_completed,
+        ROUND(COALESCE(AVG(r.percentage), 0), 0) as average_score,
+        COALESCE(SUM(r.final_score), 0) as total_points
+    FROM quiz_attempts qa
+    LEFT JOIN results r ON qa.id = r.quiz_attempt_id
+    WHERE qa.user_id = ?
+  `;
+  const [rows] = await db.query(query, [userId]);
+  return rows[0];
+};
 
-  async delete(id) {
-    const [result] = await db.query("DELETE FROM users WHERE id = ?", [id]);
-    return result.affectedRows > 0;
-  }
-}
 
-module.exports = new UserRepository();

@@ -1,40 +1,39 @@
 const CategoryRepository = require("../repositories/CategoryRepository");
+const { v4: uuid } = require("uuid");
+const AppError = require("../utils/AppError");
 
-class CategoryService {
-  async getAllCategories() {
-    return await CategoryRepository.findAll();
+exports.getAll = async () => {
+  return await CategoryRepository.findAll();
+};
+
+exports.findById = async (id) => {
+  const category = await CategoryRepository.findById(id);
+  if (!category) {
+    throw new AppError("Category not found", 404);
   }
+  return category;
+};
 
-  async getCategoryById(id) {
-    const category = await CategoryRepository.findById(id);
-    if (!category) {
-      throw new Error("Category not found");
-    }
-    return category;
+exports.create = async (data) => {
+  if (!data.name) {
+    throw new AppError("Category name is required", 400);
   }
+  data.id = uuid();
+  return await CategoryRepository.create(data);
+};
 
-  async createCategory(data) {
-    if (!data.name) {
-      throw new Error("Category name is required");
-    }
-    return await CategoryRepository.create(data);
+exports.update = async (id, data) => {
+  const updatedCategory = await CategoryRepository.update(id, data);
+  if (!updatedCategory) {
+    throw new AppError("Category not found", 404);
   }
+  return updatedCategory;
+};
 
-  async updateCategory(id, data) {
-    const updatedCategory = await CategoryRepository.update(id, data);
-    if (!updatedCategory) {
-      throw new Error("Category not found");
-    }
-    return updatedCategory;
+exports.delete = async (id) => {
+  const success = await CategoryRepository.delete(id);
+  if (!success) {
+    throw new AppError("Category not found", 404);
   }
-
-  async deleteCategory(id) {
-    const success = await CategoryRepository.delete(id);
-    if (!success) {
-      throw new Error("Category not found");
-    }
-    return success;
-  }
-}
-
-module.exports = new CategoryService();
+  return success;
+};

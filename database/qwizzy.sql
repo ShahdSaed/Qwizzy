@@ -8,16 +8,20 @@ CREATE DATABASE IF NOT EXISTS quiz_exam_db
 USE quiz_exam_db;
 
 -- ---------------------------------------------------------------------------
--- Users (students + admins via role)
+-- Users (students + instructors + admins via role)
 -- ---------------------------------------------------------------------------
 CREATE TABLE users (
-  id            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  email         VARCHAR(255) NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  full_name     VARCHAR(150) NOT NULL,
-  role          ENUM('user', 'admin') NOT NULL DEFAULT 'user',
-  created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  id                     BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  email                  VARCHAR(255) NOT NULL,
+  password_hash          VARCHAR(255) NOT NULL,
+  full_name              VARCHAR(150) NOT NULL,
+  role                   ENUM('user', 'instructor') NOT NULL DEFAULT 'user',
+  is_verified            TINYINT(1) NOT NULL DEFAULT 0,
+  verification_code      VARCHAR(4) NULL,
+  reset_password_code    VARCHAR(4) NULL,
+  reset_password_expires TIMESTAMP NULL,
+  created_at             TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at             TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY uq_users_email (email)
 ) ENGINE=InnoDB;
@@ -52,6 +56,8 @@ CREATE TABLE questions (
   body          TEXT NOT NULL,
   points        DECIMAL(6,2) NOT NULL DEFAULT 1.00,
   sort_order    INT UNSIGNED NOT NULL DEFAULT 0,
+  difficulty      ENUM('easy', 'medium', 'hard') NOT NULL DEFAULT 'medium',
+
   created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   KEY idx_questions_quiz (quiz_id, sort_order),

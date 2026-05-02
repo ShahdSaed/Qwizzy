@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
-const JWT_SECRET = process.env.JWT_SECRET || "default_super_secret_key_change_me";
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1d";
+const JWT_SECRET = process.env.JWT_SECRET || "shahd12@aya34&farida56$";
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1w";
 
 const generateToken = (payload) => {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });

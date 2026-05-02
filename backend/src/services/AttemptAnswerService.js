@@ -1,37 +1,36 @@
 const AttemptAnswerRepository = require("../repositories/AttemptAnswerRepository");
+const { v4: uuid } = require("uuid");
+const AppError = require("../utils/AppError");
 
-class AttemptAnswerService {
-  async getAllAnswers() {
-    return await AttemptAnswerRepository.findAll();
+exports.getAll = async () => {
+  return await AttemptAnswerRepository.findAll();
+};
+
+exports.findById = async (id) => {
+  const answer = await AttemptAnswerRepository.findById(id);
+  if (!answer) {
+    throw new AppError("Attempt answer not found", 404);
   }
+  return answer;
+};
 
-  async getAnswerById(id) {
-    const answer = await AttemptAnswerRepository.findById(id);
-    if (!answer) {
-      throw new Error("Attempt answer not found");
-    }
-    return answer;
+exports.create = async (data) => {
+  data.id = uuid();
+  return await AttemptAnswerRepository.create(data);
+};
+
+exports.update = async (id, data) => {
+  const updatedAnswer = await AttemptAnswerRepository.update(id, data);
+  if (!updatedAnswer) {
+    throw new AppError("Attempt answer not found", 404);
   }
+  return updatedAnswer;
+};
 
-  async createAnswer(data) {
-    return await AttemptAnswerRepository.create(data);
+exports.delete = async (id) => {
+  const success = await AttemptAnswerRepository.delete(id);
+  if (!success) {
+    throw new AppError("Attempt answer not found", 404);
   }
-
-  async updateAnswer(id, data) {
-    const updatedAnswer = await AttemptAnswerRepository.update(id, data);
-    if (!updatedAnswer) {
-      throw new Error("Attempt answer not found");
-    }
-    return updatedAnswer;
-  }
-
-  async deleteAnswer(id) {
-    const success = await AttemptAnswerRepository.delete(id);
-    if (!success) {
-      throw new Error("Attempt answer not found");
-    }
-    return success;
-  }
-}
-
-module.exports = new AttemptAnswerService();
+  return success;
+};

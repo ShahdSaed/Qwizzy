@@ -10,6 +10,8 @@ const attemptAnswerRoutes = require("./src/routes/attemptAnswerRoutes");
 const resultRoutes = require("./src/routes/resultRoutes");
 const quizCategoryRoutes = require("./src/routes/quizCategoryRoutes");
 
+const errorHandler = require("./src/middleware/errorMiddleware");
+
 const app = express();
 
 app.use(cors());
@@ -32,4 +34,7 @@ app.get("/", (req, res) => {
   });
 });
 
-module.exports = app;
+// Error Handling Middleware
+app.use(errorHandler);
+
+module.exports = app;

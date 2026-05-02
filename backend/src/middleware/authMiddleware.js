@@ -1,17 +1,18 @@
 const { verifyToken } = require("../utils/jwtUtils");
+const AppError = require("../utils/AppError");
 
 const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Access denied. No token provided." });
+    return next(new AppError("Access denied. No token provided.", 401));
   }
 
   const token = authHeader.split(" ")[1];
   const decoded = verifyToken(token);
 
   if (!decoded) {
-    return res.status(403).json({ message: "Invalid or expired token." });
+    return next(new AppError("Invalid or expired token.", 401));
   }
 
   req.user = decoded; // Attach user payload to request
@@ -19,10 +20,10 @@ const authenticate = (req, res, next) => {
 };
 
 const authorizeAdmin = (req, res, next) => {
-  if (req.user && req.user.role === "admin") {
+  if (req.user && req.user.role === "instructor") {
     next();
   } else {
-    res.status(403).json({ message: "Access denied. Admin role required." });
+    next(new AppError("Access denied. Instructor role required.", 403));
   }
 };
 

@@ -1,40 +1,40 @@
 const QuizRepository = require("../repositories/QuizRepository");
+const { v4: uuid } = require("uuid");
+const AppError = require("../utils/AppError");
 
-class QuizService {
-  async getAllQuizzes() {
-    return await QuizRepository.findAll();
+exports.getAll = async () => {
+  return await QuizRepository.findAll();
+};
+
+exports.findById = async (id) => {
+  const quiz = await QuizRepository.findById(id);
+  if (!quiz) {
+    throw new AppError("Quiz not found", 404);
   }
+  return quiz;
+};
 
-  async getQuizById(id) {
-    const quiz = await QuizRepository.findById(id);
-    if (!quiz) {
-      throw new Error("Quiz not found");
-    }
-    return quiz;
+exports.create = async (data, user) => {
+  if (!data.title || !user.id) {
+    throw new AppError("Title and creator ID are required", 400);
   }
+  data.id = uuid();
+  data.created_by_user_id = user.id;
+  return await QuizRepository.create(data);
+};
 
-  async createQuiz(data) {
-    if (!data.title || !data.created_by_user_id) {
-      throw new Error("Title and creator ID are required");
-    }
-    return await QuizRepository.create(data);
+exports.update = async (id, data) => {
+  const updatedQuiz = await QuizRepository.update(id, data);
+  if (!updatedQuiz) {
+    throw new AppError("Quiz not found", 404);
   }
+  return updatedQuiz;
+};
 
-  async updateQuiz(id, data) {
-    const updatedQuiz = await QuizRepository.update(id, data);
-    if (!updatedQuiz) {
-      throw new Error("Quiz not found");
-    }
-    return updatedQuiz;
+exports.delete = async (id) => {
+  const success = await QuizRepository.delete(id);
+  if (!success) {
+    throw new AppError("Quiz not found", 404);
   }
-
-  async deleteQuiz(id) {
-    const success = await QuizRepository.delete(id);
-    if (!success) {
-      throw new Error("Quiz not found");
-    }
-    return success;
-  }
-}
-
-module.exports = new QuizService();
+  return { success, message: "Quiz deleted successfully" };
+};
