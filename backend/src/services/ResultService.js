@@ -1,37 +1,36 @@
 const ResultRepository = require("../repositories/ResultRepository");
+const { v4: uuid } = require("uuid");
+const AppError = require("../utils/AppError");
 
-class ResultService {
-  async getAllResults() {
-    return await ResultRepository.findAll();
+exports.getAll = async () => {
+  return await ResultRepository.findAll();
+};
+
+exports.findById = async (id) => {
+  const result = await ResultRepository.findById(id);
+  if (!result) {
+    throw new AppError("Result not found", 404);
   }
+  return result;
+};
 
-  async getResultById(id) {
-    const result = await ResultRepository.findById(id);
-    if (!result) {
-      throw new Error("Result not found");
-    }
-    return result;
+exports.create = async (data) => {
+  data.id = uuid();
+  return await ResultRepository.create(data);
+};
+
+exports.update = async (id, data) => {
+  const updatedResult = await ResultRepository.update(id, data);
+  if (!updatedResult) {
+    throw new AppError("Result not found", 404);
   }
+  return updatedResult;
+};
 
-  async createResult(data) {
-    return await ResultRepository.create(data);
+exports.delete = async (id) => {
+  const success = await ResultRepository.delete(id);
+  if (!success) {
+    throw new AppError("Result not found", 404);
   }
-
-  async updateResult(id, data) {
-    const updatedResult = await ResultRepository.update(id, data);
-    if (!updatedResult) {
-      throw new Error("Result not found");
-    }
-    return updatedResult;
-  }
-
-  async deleteResult(id) {
-    const success = await ResultRepository.delete(id);
-    if (!success) {
-      throw new Error("Result not found");
-    }
-    return success;
-  }
-}
-
-module.exports = new ResultService();
+  return success;
+};

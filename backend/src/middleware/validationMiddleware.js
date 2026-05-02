@@ -1,4 +1,8 @@
 const validate = (schema) => {
+  if (!schema || typeof schema.validate !== 'function') {
+    console.error("Validation Middleware Error: Schema is undefined or invalid.");
+    return (req, res, next) => next(); // Or return a 500 error
+  }
   return (req, res, next) => {
     const { error } = schema.validate(req.body, { abortEarly: false });
     
@@ -15,3 +19,4 @@ const validate = (schema) => {
 };
 
 module.exports = validate;
+

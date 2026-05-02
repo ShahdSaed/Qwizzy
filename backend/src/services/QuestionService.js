@@ -1,37 +1,36 @@
 const QuestionRepository = require("../repositories/QuestionRepository");
+const { v4: uuid } = require("uuid");
+const AppError = require("../utils/AppError");
 
-class QuestionService {
-  async getAllQuestions() {
-    return await QuestionRepository.findAll();
+exports.getAll = async () => {
+  return await QuestionRepository.findAll();
+};
+
+exports.findById = async (id) => {
+  const question = await QuestionRepository.findById(id);
+  if (!question) {
+    throw new AppError("Question not found", 404);
   }
+  return question;
+};
 
-  async getQuestionById(id) {
-    const question = await QuestionRepository.findById(id);
-    if (!question) {
-      throw new Error("Question not found");
-    }
-    return question;
+exports.create = async (data) => {
+  data.id = uuid();
+  return await QuestionRepository.create(data);
+};
+
+exports.update = async (id, data) => {
+  const updatedQuestion = await QuestionRepository.update(id, data);
+  if (!updatedQuestion) {
+    throw new AppError("Question not found", 404);
   }
+  return updatedQuestion;
+};
 
-  async createQuestion(data) {
-    return await QuestionRepository.create(data);
+exports.delete = async (id) => {
+  const success = await QuestionRepository.delete(id);
+  if (!success) {
+    throw new AppError("Question not found", 404);
   }
-
-  async updateQuestion(id, data) {
-    const updatedQuestion = await QuestionRepository.update(id, data);
-    if (!updatedQuestion) {
-      throw new Error("Question not found");
-    }
-    return updatedQuestion;
-  }
-
-  async deleteQuestion(id) {
-    const success = await QuestionRepository.delete(id);
-    if (!success) {
-      throw new Error("Question not found");
-    }
-    return success;
-  }
-}
-
-module.exports = new QuestionService();
+  return success;
+};

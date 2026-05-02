@@ -1,37 +1,37 @@
 const QuizAttemptRepository = require("../repositories/QuizAttemptRepository");
+const { v4: uuid } = require("uuid");
+const AppError = require("../utils/AppError");
 
-class QuizAttemptService {
-  async getAllAttempts() {
-    return await QuizAttemptRepository.findAll();
+exports.getAll = async () => {
+  return await QuizAttemptRepository.findAll();
+};
+
+exports.findById = async (id) => {
+  const attempt = await QuizAttemptRepository.findById(id);
+  if (!attempt) {
+    throw new AppError("Quiz attempt not found", 404);
   }
+  return attempt;
+};
 
-  async getAttemptById(id) {
-    const attempt = await QuizAttemptRepository.findById(id);
-    if (!attempt) {
-      throw new Error("Quiz attempt not found");
-    }
-    return attempt;
+exports.create = async (data, user) => {
+  data.id = uuid();
+  data.user_id = user.id;
+  return await QuizAttemptRepository.create(data);
+};
+
+exports.update = async (id, data) => {
+  const updatedAttempt = await QuizAttemptRepository.update(id, data);
+  if (!updatedAttempt) {
+    throw new AppError("Quiz attempt not found", 404);
   }
+  return updatedAttempt;
+};
 
-  async createAttempt(data) {
-    return await QuizAttemptRepository.create(data);
+exports.delete = async (id) => {
+  const success = await QuizAttemptRepository.delete(id);
+  if (!success) {
+    throw new AppError("Quiz attempt not found", 404);
   }
-
-  async updateAttempt(id, data) {
-    const updatedAttempt = await QuizAttemptRepository.update(id, data);
-    if (!updatedAttempt) {
-      throw new Error("Quiz attempt not found");
-    }
-    return updatedAttempt;
-  }
-
-  async deleteAttempt(id) {
-    const success = await QuizAttemptRepository.delete(id);
-    if (!success) {
-      throw new Error("Quiz attempt not found");
-    }
-    return success;
-  }
-}
-
-module.exports = new QuizAttemptService();
+  return success;
+};

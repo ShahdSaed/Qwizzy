@@ -1,29 +1,26 @@
 const QuizCategoryRepository = require("../repositories/QuizCategoryRepository");
+const AppError = require("../utils/AppError");
 
-class QuizCategoryService {
-  async getAllQuizCategories() {
-    return await QuizCategoryRepository.findAll();
+exports.getAll = async () => {
+  return await QuizCategoryRepository.findAll();
+};
+
+exports.findByIds = async (quiz_id, category_id) => {
+  const mapping = await QuizCategoryRepository.findByIds(quiz_id, category_id);
+  if (!mapping) {
+    throw new AppError("Quiz Category mapping not found", 404);
   }
+  return mapping;
+};
 
-  async getQuizCategoryByIds(quiz_id, category_id) {
-    const mapping = await QuizCategoryRepository.findByIds(quiz_id, category_id);
-    if (!mapping) {
-      throw new Error("Quiz Category mapping not found");
-    }
-    return mapping;
+exports.create = async (data) => {
+  return await QuizCategoryRepository.create(data);
+};
+
+exports.delete = async (quiz_id, category_id) => {
+  const success = await QuizCategoryRepository.delete(quiz_id, category_id);
+  if (!success) {
+    throw new AppError("Quiz Category mapping not found", 404);
   }
-
-  async createQuizCategory(data) {
-    return await QuizCategoryRepository.create(data);
-  }
-
-  async deleteQuizCategory(quiz_id, category_id) {
-    const success = await QuizCategoryRepository.delete(quiz_id, category_id);
-    if (!success) {
-      throw new Error("Quiz Category mapping not found");
-    }
-    return success;
-  }
-}
-
-module.exports = new QuizCategoryService();
+  return success;
+};

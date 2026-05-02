@@ -1,8 +1,10 @@
 const Joi = require("joi");
 
 const quizAttemptSchema = Joi.object({
-  user_id: Joi.number().integer().required(),
-  quiz_id: Joi.number().integer().required(),
+  user_id: Joi.string().required(),
+
+  quiz_id: Joi.string().required(),
+
   submitted_at: Joi.date().allow(null).optional(),
   score: Joi.number().precision(2).allow(null).optional(),
   max_score: Joi.number().precision(2).allow(null).optional()

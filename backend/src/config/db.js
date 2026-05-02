@@ -29,7 +29,8 @@ const connectDB = async () => {
     console.log("Connected to MySQL successfully");
     connection.release();
   } catch (error) {
-    console.error("Database connection failed:", error.message);
+    console.error("Database connection failed:");
+    console.error(error);
   }
 };
 
