@@ -5,7 +5,7 @@ exports.findAll = async () => {
   return rows;
 };
 
-exports.findAllWithQuestions = async () => {
+exports.findAllWithQuestionCount = async () => {
   const [rows] = await db.query(`
     SELECT 
       q.*, 
@@ -14,21 +14,21 @@ exports.findAllWithQuestions = async () => {
     LEFT JOIN questions qs ON q.id = qs.quiz_id 
     GROUP BY q.id
   `);
-
   return rows;
 };
 
 exports.findById = async (id) => {
-  const [rows] = await db.query("SELECT * FROM quizzes WHERE id = ?", [id]);
-  return rows[0] || null;
+  const [rows] = await db.query("SELECT q.*, qs.* FROM quizzes q LEFT JOIN questions qs ON q.id = qs.quiz_id WHERE q.id = ?", [id]);
+  return rows;
 };
 
 exports.create = async (data) => {
-  const { id, title, description, created_by_user_id, is_published, time_limit_minutes, difficulty } = data;
+  const { id, title, description, created_by_user_id, is_published, time_limit_minutes, difficulty, category_id } = data;
   await db.query(
-    "INSERT INTO quizzes (id, title, description, created_by_user_id, is_published, time_limit_minutes, difficulty) VALUES (?, ?, ?, ?, ?, ?, ?)",
-    [id, title, description || null, created_by_user_id, is_published || 0, time_limit_minutes || null, difficulty || 'medium']
+    "INSERT INTO quizzes (id, title, description, created_by_user_id, is_published, time_limit_minutes, difficulty, category_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+    [id, title, description || null, created_by_user_id, is_published || 0, time_limit_minutes || null, difficulty || 'medium', category_id]
   );
+
   return exports.findById(id);
 
 };

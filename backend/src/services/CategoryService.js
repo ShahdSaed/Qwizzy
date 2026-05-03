@@ -15,7 +15,7 @@ exports.findById = async (id) => {
 };
 
 exports.create = async (data) => {
-  if (!data.name) {
+  if (!data.NAME) {
     throw new AppError("Category name is required", 400);
   }
   data.id = uuid();

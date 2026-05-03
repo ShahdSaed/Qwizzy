@@ -8,8 +8,8 @@ exports.getAll = async () => {
   return quizzes;
   };
 
-  exports.getAllWithQuestions = async () => {
-    const quizzes = await QuizRepository.findAllWithQuestions();
+  exports.getAllWithQuestionCount = async () => {
+    const quizzes = await QuizRepository.findAllWithQuestionCount();
     return quizzes;
 };
 

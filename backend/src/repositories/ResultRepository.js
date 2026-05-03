@@ -11,10 +11,10 @@ exports.findById = async (id) => {
 };
 
 exports.create = async (data) => {
-  const { id, quiz_attempt_id, final_score, max_score, percentage, status } = data;
+  const { id, quiz_attempt_id, final_score, max_score, percentage, STATUS, achieved_at } = data;
   await db.query(
-    "INSERT INTO results (id, quiz_attempt_id, final_score, max_score, percentage, status) VALUES (?, ?, ?, ?, ?, ?)",
-    [id, quiz_attempt_id, final_score, max_score, percentage, status]
+    "INSERT INTO results (id, quiz_attempt_id, final_score, max_score, percentage, STATUS, achieved_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    [id, quiz_attempt_id, final_score, max_score, percentage, STATUS, achieved_at || new Date()]
   );
   return exports.findById(id);
 

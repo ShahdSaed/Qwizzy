@@ -6,7 +6,8 @@ const resultSchema = Joi.object({
   final_score: Joi.number().precision(2).required(),
   max_score: Joi.number().precision(2).required(),
   percentage: Joi.number().precision(2).required(),
-  status: Joi.string().valid('pass', 'fail').required()
+  STATUS: Joi.string().valid('pass', 'fail').required(),
+  achieved_at: Joi.date().optional()
 });
 
 module.exports = { resultSchema };
