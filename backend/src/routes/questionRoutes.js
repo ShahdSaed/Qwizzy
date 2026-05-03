@@ -14,6 +14,8 @@ router.get("/", QuestionController.getAll);
 // Read One
 router.get("/:id", QuestionController.getById);
 
+router.get("/quiz/:quiz_id", QuestionController.getByQuizId);
+
 // Update (Admin only)
 router.put("/:id", authenticate, authorizeAdmin, validate(questionSchema), QuestionController.update);
 

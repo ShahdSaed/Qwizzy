@@ -14,6 +14,10 @@ exports.findById = async (id) => {
   return question;
 };
 
+exports.findByQuizId = async (quiz_id) => {
+  return await QuestionRepository.findByQuizId(quiz_id);
+};
+
 exports.create = async (data) => {
   data.id = uuid();
   return await QuestionRepository.create(data);

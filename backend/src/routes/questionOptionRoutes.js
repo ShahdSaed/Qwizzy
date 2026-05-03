@@ -14,6 +14,8 @@ router.get("/", QuestionOptionController.getAll);
 // Read One
 router.get("/:id", QuestionOptionController.getById);
 
+router.get("/question/:question_id", QuestionOptionController.getByQuestionId);
+
 // Update (Admin only)
 router.put("/:id", authenticate, authorizeAdmin, validate(questionOptionSchema), QuestionOptionController.update);
 

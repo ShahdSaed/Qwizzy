@@ -1,14 +1,18 @@
 const QuizRepository = require("../repositories/QuizRepository");
 const { v4: uuid } = require("uuid");
 const AppError = require("../utils/AppError");
+const e = require("express");
 
 exports.getAll = async () => {
   const quizzes = await QuizRepository.findAll();
-  return await Promise.all(quizzes.map(async (quiz) => {
-    const questions = await QuestionRepository.findByQuizId(quiz.id);
-    return { ...quiz, questions };
-  }));
+  return quizzes;
+  };
+
+  exports.getAllWithQuestions = async () => {
+    const quizzes = await QuizRepository.findAllWithQuestions();
+    return quizzes;
 };
+
 exports.findById = async (id) => {
   const quiz = await QuizRepository.findById(id);
   if (!quiz) {

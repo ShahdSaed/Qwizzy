@@ -14,6 +14,10 @@ exports.findById = async (id) => {
   return option;
 };
 
+exports.findByQuestionId = async (question_id) => {
+  return await QuestionOptionRepository.findByQuestionId(question_id);
+};
+
 exports.create = async (data) => {
   data.id = uuid();
   return await QuestionOptionRepository.create(data);

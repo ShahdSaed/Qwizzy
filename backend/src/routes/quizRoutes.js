@@ -8,6 +8,9 @@ const { createQuizSchema } = require("../validators/quizValidator");
 // Create
 router.post("/", authenticate, authorizeAdmin, validate(createQuizSchema), QuizController.create);
 
+// get all with count of questions
+router.get("/question_count", authenticate, QuizController.getAllWithQuestions);
+
 // Read All
 router.get("/",authenticate, QuizController.getAll);
 
@@ -19,5 +22,6 @@ router.put("/:id", authenticate, authorizeAdmin, validate(createQuizSchema), Qui
 
 // Delete
 router.delete("/:id", authenticate, authorizeAdmin, QuizController.delete);
+
 
 module.exports = router;

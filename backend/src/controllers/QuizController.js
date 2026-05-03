@@ -6,10 +6,15 @@ exports.getAll = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: quizzes });
 });
 
+exports.getAllWithQuestions = asyncHandler(async (req, res) => {
+  const quizzes = await QuizService.getAllWithQuestions();
+  res.status(200).json({ success: true, data: quizzes });
+});
 exports.getById = asyncHandler(async (req, res) => {
   const quiz = await QuizService.findById(req.params.id);
   res.status(200).json({ success: true, data: quiz });
 });
+
 
 exports.create = asyncHandler(async (req, res) => {
   const quiz = await QuizService.create(req.body, req.user);
