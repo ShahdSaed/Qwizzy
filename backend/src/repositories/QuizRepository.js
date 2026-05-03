@@ -9,9 +9,11 @@ exports.findAllWithQuestionCount = async () => {
   const [rows] = await db.query(`
     SELECT 
       q.*, 
-      COUNT(qs.id) as questions_count
+      COUNT(qs.id) as questions_count,
+      c.NAME as category_name
     FROM quizzes q 
     LEFT JOIN questions qs ON q.id = qs.quiz_id 
+    LEFT JOIN categories c ON q.category_id = c.id 
     GROUP BY q.id
   `);
   return rows;
