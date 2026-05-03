@@ -15,7 +15,11 @@ exports.findById = async (id) => {
 };
 
 exports.findByQuizId = async (quiz_id) => {
-  return await QuestionRepository.findByQuizId(quiz_id);
+  const question = await QuestionRepository.findByQuizId(quiz_id);
+  if (!question) {
+    throw new AppError("Question not found", 404);
+  }
+  return question;
 };
 
 exports.create = async (data) => {

@@ -1,4 +1,5 @@
 const QuestionOptionRepository = require("../repositories/QuestionOptionRepository");
+const QuestionRepository = require("../repositories/QuestionRepository");
 const { v4: uuid } = require("uuid");
 const AppError = require("../utils/AppError");
 
@@ -19,6 +20,12 @@ exports.findByQuestionId = async (question_id) => {
 };
 
 exports.create = async (data) => {
+  // Verify question exists
+  const question = await QuestionRepository.findById(data.question_id);
+  if (!question) {
+    throw new AppError(`Question not found with ID: ${data.question_id}`, 404);
+  }
+
   data.id = uuid();
   return await QuestionOptionRepository.create(data);
 };
