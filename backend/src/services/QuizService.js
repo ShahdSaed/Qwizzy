@@ -5,13 +5,15 @@ const e = require("express");
 
 exports.getAll = async (user) => {
   const instructorId = (user && user.role === 'instructor') ? user.id : null;
-  const quizzes = await QuizRepository.findAll(instructorId);
+  const onlyPublished = (user && user.role === 'user'); 
+  const quizzes = await QuizRepository.findAll(instructorId, onlyPublished);
   return quizzes;
 };
 
 exports.getAllWithQuestionCount = async (user) => {
   const instructorId = (user && user.role === 'instructor') ? user.id : null;
-  const quizzes = await QuizRepository.findAllWithQuestionCount(instructorId);
+  const onlyPublished = (user && user.role === 'user'); 
+  const quizzes = await QuizRepository.findAllWithQuestionCount(instructorId, onlyPublished);
   return quizzes;
 };
 

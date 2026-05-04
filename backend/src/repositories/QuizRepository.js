@@ -1,17 +1,28 @@
 const { db } = require("../config/db");
 
-exports.findAll = async (instructorId = null) => {
+exports.findAll = async (instructorId = null, onlyPublished = false) => {
   let query = "SELECT *,c.NAME as category_name FROM quizzes q LEFT JOIN categories c ON q.category_id = c.id";
   const values = [];
+  const conditions = [];
+
   if (instructorId) {
-    query += " WHERE q.created_by_user_id = ?";
+    conditions.push("q.created_by_user_id = ?");
     values.push(instructorId);
   }
+
+  if (onlyPublished) {
+    conditions.push("q.is_published = 1");
+  }
+
+  if (conditions.length > 0) {
+    query += " WHERE " + conditions.join(" AND ");
+  }
+
   const [rows] = await db.query(query, values);
   return rows;
 };
 
-exports.findAllWithQuestionCount = async (instructorId = null) => {
+exports.findAllWithQuestionCount = async (instructorId = null, onlyPublished = false) => {
   let query = `
     SELECT 
       q.*, 
@@ -22,10 +33,19 @@ exports.findAllWithQuestionCount = async (instructorId = null) => {
     LEFT JOIN categories c ON q.category_id = c.id 
   `;
   const values = [];
+  const conditions = [];
 
   if (instructorId) {
-    query += " WHERE q.created_by_user_id = ? ";
+    conditions.push("q.created_by_user_id = ?");
     values.push(instructorId);
+  }
+
+  if (onlyPublished) {
+    conditions.push("q.is_published = 1");
+  }
+
+  if (conditions.length > 0) {
+    query += " WHERE " + conditions.join(" AND ");
   }
 
   query += " GROUP BY q.id ";
