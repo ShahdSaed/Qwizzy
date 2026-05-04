@@ -109,6 +109,11 @@ exports.resetPassword = async (email, newPassword) => {
   const user = await exports.findByEmail(email);
   if (!user) throw new AppError("User not found", 404);
 
+  // Security check: only allow reset if a code exists and hasn't expired
+  if (!user.reset_password_code || !user.reset_password_expires || new Date(user.reset_password_expires) < new Date()) {
+    throw new AppError("No active or valid password reset request found. Please request a new code.", 400);
+  }
+
   const hashedPassword = await hashPassword(newPassword);
   await UserRepository.update(user.id, {
     password_hash: hashedPassword,
