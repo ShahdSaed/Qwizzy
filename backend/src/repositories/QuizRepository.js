@@ -1,12 +1,18 @@
 const { db } = require("../config/db");
 
-exports.findAll = async () => {
-  const [rows] = await db.query("SELECT * FROM quizzes");
+exports.findAll = async (instructorId = null) => {
+  let query = "SELECT *,c.NAME as category_name FROM quizzes q LEFT JOIN categories c ON q.category_id = c.id";
+  const values = [];
+  if (instructorId) {
+    query += " WHERE q.created_by_user_id = ?";
+    values.push(instructorId);
+  }
+  const [rows] = await db.query(query, values);
   return rows;
 };
 
-exports.findAllWithQuestionCount = async () => {
-  const [rows] = await db.query(`
+exports.findAllWithQuestionCount = async (instructorId = null) => {
+  let query = `
     SELECT 
       q.*, 
       COUNT(qs.id) as questions_count,
@@ -14,8 +20,17 @@ exports.findAllWithQuestionCount = async () => {
     FROM quizzes q 
     LEFT JOIN questions qs ON q.id = qs.quiz_id 
     LEFT JOIN categories c ON q.category_id = c.id 
-    GROUP BY q.id
-  `);
+  `;
+  const values = [];
+
+  if (instructorId) {
+    query += " WHERE q.created_by_user_id = ? ";
+    values.push(instructorId);
+  }
+
+  query += " GROUP BY q.id ";
+
+  const [rows] = await db.query(query, values);
   return rows;
 };
 

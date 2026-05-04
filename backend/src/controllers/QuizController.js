@@ -2,12 +2,12 @@ const QuizService = require("../services/QuizService");
 const asyncHandler = require("../utils/asyncHandler");
 
 exports.getAll = asyncHandler(async (req, res) => {
-  const quizzes = await QuizService.getAll();
+  const quizzes = await QuizService.getAll(req.user);
   res.status(200).json({ success: true, data: quizzes });
 });
 
 exports.getAllWithQuestionCount = asyncHandler(async (req, res) => {
-  const quizzes = await QuizService.getAllWithQuestionCount();
+  const quizzes = await QuizService.getAllWithQuestionCount(req.user);
   res.status(200).json({ success: true, data: quizzes });
 });
 
