@@ -11,11 +11,41 @@ Qwizzy is a robust, layered-architecture backend for an online quiz and examinat
 - **Result Analysis**: Automatic grading and performance statistics.
 - **Categories**: Organize quizzes by topic.
 
-## 🛠️ Architecture & Design Patterns
+The project follows a **Layered Architecture (Controller-Service-Repository)** and implements multiple design patterns to ensure scalability and maintainability:
 
-The project follows a **Layered Architecture (Controller-Service-Repository)** to ensure separation of concerns:
+1.  **Repository Pattern**: Decouples business logic from data access.
+2.  **Factory Pattern**: Used in `QuestionService` via `QuestionFactory` for standardized object creation.
+3.  **Strategy Pattern**: Used in `QuizAttemptService` via `ScoringStrategy` for flexible grading logic.
+4.  **Singleton Pattern**: Database connection pool is managed as a single instance.
 
-1.  **Controllers**: Handle HTTP requests and responses (standardized via `asyncHandler`).
+## 📚 Documentation
+- **[SRS Document](file:///c:/Users/IT/OneDrive/Documents/Qwizzy/SRS.md)**: Functional and non-functional requirements.
+- **[Design & Architecture](file:///c:/Users/IT/OneDrive/Documents/Qwizzy/DESIGN.md)**: UML diagrams (Use Case, Class, Sequence) and pattern details.
+
+## 📡 API Endpoints (Summary)
+
+### Authentication
+- `POST /api/users/register`: Create new account.
+- `POST /api/users/login`: Authenticate and get JWT.
+- `POST /api/users/verify-email`: Verify account via code.
+
+### Quizzes
+- `GET /api/quizzes`: List all quizzes.
+- `POST /api/quizzes`: Create a quiz (Instructor).
+- `GET /api/quizzes/:id/questions`: Get questions for a specific quiz.
+
+### Attempts
+- `POST /api/quiz-attempts/submit`: Submit answers and get score.
+- `GET /api/results/:id`: View detailed performance analysis.
+
+## 🧪 Testing
+The project uses **Jest** for unit testing.
+```bash
+npm test
+```
+
+## 🛠️ Components
+1.  **Controllers**: Handle HTTP requests and responses.
 2.  **Services**: Contain business logic and orchestrate repositories.
 3.  **Repositories**: Encapsulate raw SQL queries using `mysql2`.
 4.  **Validators**: Data validation using `Joi`.

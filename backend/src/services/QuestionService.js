@@ -22,9 +22,11 @@ exports.findByQuizId = async (quiz_id) => {
   return question;
 };
 
+const QuestionFactory = require("../utils/questionFactory");
+
 exports.create = async (data) => {
-  data.id = uuid();
-  return await QuestionRepository.create(data);
+  const questionData = QuestionFactory.create(data);
+  return await QuestionRepository.create(questionData);
 };
 
 exports.update = async (id, data) => {
