@@ -26,15 +26,35 @@ exports.create = async (data) => {
     throw new AppError(`Question not found with ID: ${data.question_id}`, 404);
   }
 
+  // If setting this option as correct, check if one already exists
+  if (data.is_correct) {
+    const existingCorrect = await QuestionOptionRepository.findCorrectOptionByQuestionId(data.question_id);
+    if (existingCorrect) {
+      throw new AppError("This question already has a correct option.", 400);
+    }
+  }
+
   data.id = uuid();
   return await QuestionOptionRepository.create(data);
 };
 
 exports.update = async (id, data) => {
-  const updatedOption = await QuestionOptionRepository.update(id, data);
-  if (!updatedOption) {
+  const currentOption = await QuestionOptionRepository.findById(id);
+  if (!currentOption) {
     throw new AppError("Question option not found", 404);
   }
+
+  // If setting this option as correct, check if another one already exists
+  if (data.is_correct) {
+    const questionId = data.question_id || currentOption.question_id;
+    const existingCorrect = await QuestionOptionRepository.findCorrectOptionByQuestionId(questionId);
+    
+    if (existingCorrect && existingCorrect.id !== id) {
+      throw new AppError("This question already has another correct option.", 400);
+    }
+  }
+
+  const updatedOption = await QuestionOptionRepository.update(id, data);
   return updatedOption;
 };
 
