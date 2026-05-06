@@ -12,8 +12,26 @@ exports.findById = async (id) => {
 
 
 exports.findByQuizId = async (quiz_id) => {
-  const [rows] = await db.query("SELECT * FROM questions WHERE quiz_id = ?", [quiz_id]);
-  return rows;
+  const [questions] = await db.query("SELECT * FROM questions WHERE quiz_id = ?", [quiz_id]);
+  
+  if (questions.length === 0) return [];
+
+  const questionIds = questions.map(q => q.id);
+  const [options] = await db.query(
+    "SELECT * FROM question_options WHERE question_id IN (?) ORDER BY sort_order",
+    [questionIds]
+  );
+
+  const optionsMap = options.reduce((acc, opt) => {
+    if (!acc[opt.question_id]) acc[opt.question_id] = [];
+    acc[opt.question_id].push(opt);
+    return acc;
+  }, {});
+
+  return questions.map(q => ({
+    ...q,
+    options: optionsMap[q.id] || []
+  }));
 };
 
 exports.create = async (data) => {

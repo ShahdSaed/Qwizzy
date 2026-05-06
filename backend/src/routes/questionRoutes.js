@@ -8,7 +8,7 @@ const { questionSchema } = require("../validators/questionValidator");
 // Create (Admin only)
 router.post("/", authenticate, authorizeAdmin, validate(questionSchema), QuestionController.create);
 
-// Read All
+// Read All 
 router.get("/", QuestionController.getAll);
 
 // Read One
