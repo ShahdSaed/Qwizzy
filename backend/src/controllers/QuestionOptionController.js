@@ -11,6 +11,11 @@ exports.getById = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: option });
 });
 
+exports.getByQuestionId = asyncHandler(async (req, res) => {
+  const options = await QuestionOptionService.findByQuestionId(req.params.question_id);
+  res.status(200).json({ success: true, data: options });
+});
+
 exports.create = asyncHandler(async (req, res) => {
   const option = await QuestionOptionService.create(req.body);
   res.status(201).json({ success: true, data: option });
@@ -23,5 +28,5 @@ exports.update = asyncHandler(async (req, res) => {
 
 exports.delete = asyncHandler(async (req, res) => {
   await QuestionOptionService.delete(req.params.id);
-  res.status(204).send();
+  res.status(204).send({message: "Question option deleted successfully"});
 });

@@ -1,7 +1,16 @@
 const { db } = require("../config/db");
 
 exports.findAll = async () => {
-  const [rows] = await db.query("SELECT * FROM users");
+  const query = `
+    SELECT 
+        u.*,
+        CASE 
+            WHEN u.role = 'instructor' THEN (SELECT COUNT(*) FROM quizzes q WHERE q.created_by_user_id = u.id)
+            ELSE (SELECT COUNT(*) FROM quiz_attempts qa WHERE qa.user_id = u.id)
+        END as quizzes_count
+    FROM users u
+  `;
+  const [rows] = await db.query(query);
   return rows;
 };
 

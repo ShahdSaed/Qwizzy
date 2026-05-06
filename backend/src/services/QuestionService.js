@@ -14,6 +14,14 @@ exports.findById = async (id) => {
   return question;
 };
 
+exports.findByQuizId = async (quiz_id) => {
+  const question = await QuestionRepository.findByQuizId(quiz_id);
+  if (!question) {
+    throw new AppError("Question not found", 404);
+  }
+  return question;
+};
+
 exports.create = async (data) => {
   data.id = uuid();
   return await QuestionRepository.create(data);

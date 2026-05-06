@@ -1,9 +1,20 @@
 const QuizRepository = require("../repositories/QuizRepository");
 const { v4: uuid } = require("uuid");
 const AppError = require("../utils/AppError");
+const e = require("express");
 
-exports.getAll = async () => {
-  return await QuizRepository.findAll();
+exports.getAll = async (user) => {
+  const instructorId = (user && user.role === 'instructor') ? user.id : null;
+  const onlyPublished = (user && user.role === 'user'); 
+  const quizzes = await QuizRepository.findAll(instructorId, onlyPublished);
+  return quizzes;
+};
+
+exports.getAllWithQuestionCount = async (user) => {
+  const instructorId = (user && user.role === 'instructor') ? user.id : null;
+  const onlyPublished = (user && user.role === 'user'); 
+  const quizzes = await QuizRepository.findAllWithQuestionCount(instructorId, onlyPublished);
+  return quizzes;
 };
 
 exports.findById = async (id) => {

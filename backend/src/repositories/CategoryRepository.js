@@ -11,10 +11,10 @@ exports.findById = async (id) => {
 };
 
 exports.create = async (data) => {
-  const { id, name, description } = data;
+  const { id, NAME, description } = data;
   await db.query(
-    "INSERT INTO categories (id, name, description) VALUES (?, ?, ?)",
-    [id, name, description || null]
+    "INSERT INTO categories (id, NAME, description) VALUES (?, ?, ?)",
+    [id, NAME, description || null]
   );
   return exports.findById(id);
 

@@ -11,6 +11,11 @@ exports.getById = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: question });
 });
 
+exports.getByQuizId = asyncHandler(async (req, res) => {
+  const questions = await QuestionService.findByQuizId(req.params.quiz_id);
+  res.status(200).json({ success: true, data: questions });
+});
+
 exports.create = asyncHandler(async (req, res) => {
   const question = await QuestionService.create(req.body);
   res.status(201).json({ success: true, data: question });
@@ -23,5 +28,5 @@ exports.update = asyncHandler(async (req, res) => {
 
 exports.delete = asyncHandler(async (req, res) => {
   await QuestionService.delete(req.params.id);
-  res.status(204).send();
+  res.status(204).send("Question deleted successfully");
 });

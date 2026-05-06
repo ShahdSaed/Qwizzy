@@ -8,6 +8,9 @@ const { quizAttemptSchema } = require("../validators/quizAttemptValidator");
 // Create (Authenticated users)
 router.post("/", authenticate, validate(quizAttemptSchema), QuizAttemptController.create);
 
+// Submit Quiz (Authenticated users)
+router.post("/submit", authenticate, QuizAttemptController.submit);
+
 // Read All (Instructor only)
 router.get("/", authenticate, authorizeAdmin, QuizAttemptController.getAll);
 

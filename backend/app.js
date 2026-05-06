@@ -8,7 +8,6 @@ const questionOptionRoutes = require("./src/routes/questionOptionRoutes");
 const quizAttemptRoutes = require("./src/routes/quizAttemptRoutes");
 const attemptAnswerRoutes = require("./src/routes/attemptAnswerRoutes");
 const resultRoutes = require("./src/routes/resultRoutes");
-const quizCategoryRoutes = require("./src/routes/quizCategoryRoutes");
 
 const errorHandler = require("./src/middleware/errorMiddleware");
 
@@ -26,7 +25,6 @@ app.use("/api/question-options", questionOptionRoutes);
 app.use("/api/quiz-attempts", quizAttemptRoutes);
 app.use("/api/attempt-answers", attemptAnswerRoutes);
 app.use("/api/results", resultRoutes);
-app.use("/api/quiz-categories", quizCategoryRoutes);
 
 app.get("/", (req, res) => {
   res.json({
@@ -37,4 +35,4 @@ app.get("/", (req, res) => {
 // Error Handling Middleware
 app.use(errorHandler);
 
-module.exports = app;
+module.exports = app;
