@@ -28,5 +28,5 @@ exports.update = asyncHandler(async (req, res) => {
 
 exports.delete = asyncHandler(async (req, res) => {
   await QuestionService.delete(req.params.id);
-  res.status(204).send();
+  res.status(204).send("Question deleted successfully");
 });

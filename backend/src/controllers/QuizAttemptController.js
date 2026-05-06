@@ -16,7 +16,13 @@ exports.create = asyncHandler(async (req, res) => {
   res.status(201).json({ success: true, data: attempt });
 });
 
-exports.update = asyncHandler(async (req, res) => {
+exports.submit = asyncHandler(async (req, res) => {
+  const { quiz_id, answers } = req.body;
+  const result = await QuizAttemptService.submit(quiz_id, answers, req.user);
+  res.status(200).json({ success: true, data: result });
+});
+ 
+ exports.update = asyncHandler(async (req, res) => {
   const attempt = await QuizAttemptService.update(req.params.id, req.body);
   res.status(200).json({ success: true, data: attempt });
 });
