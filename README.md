@@ -57,15 +57,15 @@ database/
 3.  **Configure environment variables**:
     Create a `.env` file in the `backend/` directory:
     ```env
-    PORT=3000
-    DB_HOST=db48640.public.databaseasp.net
-    DB_USER=db48640
-    DB_PASS=9Bh-Kw+5@2eF
-    DB_NAME=db48640
-    DB_PORT=3306
-    JWT_SECRET=shahd12@aya34&farida56$---
-    EMAIL_USER=awizzy2026@gmail.com
-    EMAIL_PASS=zohjmqialnymtaps
+    PORT=
+    DB_HOST=
+    DB_USER=
+    DB_PASS=
+    DB_NAME=
+    DB_PORT=
+    JWT_SECRET=
+    EMAIL_USER=
+    EMAIL_PASS=
     ```
 4.  **Run the server**:
     ```bash
