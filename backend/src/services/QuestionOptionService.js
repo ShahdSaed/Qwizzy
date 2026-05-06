@@ -44,13 +44,13 @@ exports.update = async (id, data) => {
     throw new AppError("Question option not found", 404);
   }
 
-  // If setting this option as correct, check if another one already exists
-  if (data.is_correct) {
+  // If setting this option as correct (true or 1), check if another one already exists
+  if (data.is_correct == true || data.is_correct == 1) {
     const questionId = data.question_id || currentOption.question_id;
     const existingCorrect = await QuestionOptionRepository.findCorrectOptionByQuestionId(questionId);
     
     if (existingCorrect && existingCorrect.id !== id) {
-      throw new AppError("This question already has another correct option.", 400);
+      throw new AppError("This question already has another correct option. Please unset the current one first.", 400);
     }
   }
 
