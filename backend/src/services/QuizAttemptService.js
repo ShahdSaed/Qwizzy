@@ -22,6 +22,8 @@ exports.create = async (data, user) => {
   return await QuizAttemptRepository.create(data);
 };
 
+const { StandardScoringStrategy } = require("../utils/scoringStrategies");
+
 exports.submit = async (quiz_id, user_answers, user) => {
   // 1. Fetch questions with options
   const questions = await QuestionRepository.findByQuizId(quiz_id);
@@ -29,48 +31,11 @@ exports.submit = async (quiz_id, user_answers, user) => {
     throw new AppError("No questions found for this quiz", 404);
   }
 
+  // 2. Use Strategy Pattern for scoring
+  const scoringStrategy = new StandardScoringStrategy();
+  const { totalScore, maxScore, results, answersToSave } = scoringStrategy.calculate(questions, user_answers);
+
   const attemptId = uuid();
-  let totalScore = 0;
-  let maxScore = 0;
-  const detailedResults = [];
-  const answersToSave = [];
-
-  // 2. Calculate scores and prepare results
-  for (const question of questions) {
-    const questionPoints = parseFloat(question.points || 0);
-    maxScore += questionPoints;
-
-    const userAnswer = user_answers.find(a => a.question_id === question.id);
-    const selectedOptionId = userAnswer ? userAnswer.selected_option_id : null;
-
-    const correctOption = question.options.find(o => o.is_correct);
-    const isCorrect = selectedOptionId === (correctOption ? correctOption.id : null);
-    
-    const earnedPoints = isCorrect ? questionPoints : 0;
-    totalScore += earnedPoints;
-
-    // Prepare answer data for saving later
-    if (selectedOptionId) {
-      answersToSave.push({
-        id: uuid(),
-        quiz_attempt_id: attemptId,
-        question_id: question.id,
-        selected_option_id: selectedOptionId,
-        is_correct: isCorrect,
-        earned_points: earnedPoints
-      });
-    }
-
-    detailedResults.push({
-      question_id: question.id,
-      body: question.body,
-      selected_option_id: selectedOptionId,
-      selected_option_label: question.options.find(o => o.id === selectedOptionId)?.label || null,
-      is_correct: isCorrect,
-      points: questionPoints,
-      earned_points: earnedPoints
-    });
-  }
 
   // 3. Save the overall attempt FIRST (The parent record)
   await QuizAttemptRepository.create({
@@ -85,7 +50,11 @@ exports.submit = async (quiz_id, user_answers, user) => {
 
   // 4. Save individual answers SECOND (The child records)
   for (const answerData of answersToSave) {
-    await AttemptAnswerRepository.create(answerData);
+    await AttemptAnswerRepository.create({
+      id: uuid(),
+      quiz_attempt_id: attemptId,
+      ...answerData
+    });
   }
 
   return {
@@ -94,7 +63,7 @@ exports.submit = async (quiz_id, user_answers, user) => {
     score: totalScore,
     max_score: maxScore,
     percentage: maxScore > 0 ? (totalScore / maxScore) * 100 : 0,
-    results: detailedResults
+    results: results
   };
 };
 
