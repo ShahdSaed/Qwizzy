@@ -24,6 +24,8 @@ exports.create = async (data, user) => {
 
 const { StandardScoringStrategy } = require("../utils/scoringStrategies");
 
+const ResultRepository = require("../repositories/ResultRepository");
+
 exports.submit = async (quiz_id, user_answers, user) => {
   // 1. Fetch questions with options
   const questions = await QuestionRepository.findByQuizId(quiz_id);
@@ -36,6 +38,8 @@ exports.submit = async (quiz_id, user_answers, user) => {
   const { totalScore, maxScore, results, answersToSave } = scoringStrategy.calculate(questions, user_answers);
 
   const attemptId = uuid();
+  const percentage = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
+  const status = percentage >= 50 ? 'pass' : 'fail';
 
   // 3. Save the overall attempt FIRST (The parent record)
   await QuizAttemptRepository.create({
@@ -57,12 +61,23 @@ exports.submit = async (quiz_id, user_answers, user) => {
     });
   }
 
+  // 5. Save the final result in the 'results' table
+  await ResultRepository.create({
+    id: uuid(),
+    quiz_attempt_id: attemptId,
+    final_score: totalScore,
+    max_score: maxScore,
+    percentage: percentage,
+    STATUS: status
+  });
+
   return {
     attempt_id: attemptId,
     quiz_id: quiz_id,
     score: totalScore,
     max_score: maxScore,
-    percentage: maxScore > 0 ? (totalScore / maxScore) * 100 : 0,
+    percentage: percentage,
+    status: status,
     results: results
   };
 };
