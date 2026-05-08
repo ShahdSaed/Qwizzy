@@ -76,7 +76,7 @@ exports.forgotPassword = async (email) => {
   if (!user) throw new AppError("User not found", 404);
 
   const resetCode = Math.floor(1000 + Math.random() * 9000).toString();
-  const expires = new Date(Date.now() + 3600000); // 1 hour
+  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
   await UserRepository.update(user.id, {
     reset_password_code: resetCode,
