@@ -49,7 +49,7 @@ describe('User Actions Integration Tests', () => {
 
     describe('POST /api/users/verify-forgot-password-code', () => {
         it('should verify reset code and set verified flag', async () => {
-            const userWithCode = { ...mockUser, reset_password_code: '1234', reset_password_expires: new Date(Date.now() + 3600000) };
+            const userWithCode = { ...mockUser, reset_password_code: '1234', reset_password_expires: new Date(Date.now() + 24 * 60 * 60 * 1000) };
             db.query.mockResolvedValueOnce([[userWithCode]]); // findByResetCode (SELECT)
             db.query.mockResolvedValueOnce([{ affectedRows: 1 }]); // update is_reset_verified (UPDATE)
             db.query.mockResolvedValueOnce([[userWithCode]]); // update -> findById (SELECT)
@@ -71,7 +71,7 @@ describe('User Actions Integration Tests', () => {
             const userWithCodeNotVerified = { 
                 ...mockUser, 
                 reset_password_code: '1234', 
-                reset_password_expires: new Date(Date.now() + 3600000),
+                reset_password_expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
                 is_reset_verified: 0 
             };
             db.query.mockResolvedValueOnce([[userWithCodeNotVerified]]); // findByEmail (SELECT)
@@ -91,7 +91,7 @@ describe('User Actions Integration Tests', () => {
             const userVerified = { 
                 ...mockUser, 
                 reset_password_code: '1234', 
-                reset_password_expires: new Date(Date.now() + 3600000),
+                reset_password_expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
                 is_reset_verified: 1 
             };
             db.query.mockResolvedValueOnce([[userVerified]]); // findByEmail (SELECT)
