@@ -26,6 +26,12 @@ exports.create = async (data) => {
     throw new AppError(`Question not found with ID: ${data.question_id}`, 404);
   }
 
+  // Check for duplicate label
+  const existingLabel = await QuestionOptionRepository.findByLabelAndQuestionId(data.label, data.question_id);
+  if (existingLabel) {
+    throw new AppError("This option already exists for this question.", 400);
+  }
+
   // If setting this option as correct, check if one already exists
   if (data.is_correct) {
     const existingCorrect = await QuestionOptionRepository.findCorrectOptionByQuestionId(data.question_id);
@@ -51,6 +57,15 @@ exports.update = async (id, data) => {
     
     if (existingCorrect && existingCorrect.id !== id) {
       throw new AppError("This question already has another correct option. Please unset the current one first.", 400);
+    }
+  }
+
+  // Check for duplicate label if label is being updated
+  if (data.label) {
+    const questionId = data.question_id || currentOption.question_id;
+    const existingLabel = await QuestionOptionRepository.findByLabelAndQuestionId(data.label, questionId);
+    if (existingLabel && existingLabel.id !== id) {
+      throw new AppError("This option label already exists for this question.", 400);
     }
   }
 
