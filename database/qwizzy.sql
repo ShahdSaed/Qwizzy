@@ -20,6 +20,7 @@ CREATE TABLE users (
   is_verified            TINYINT(1) NOT NULL DEFAULT 0,
   reset_password_code    VARCHAR(4) NULL,
   reset_password_expires TIMESTAMP NULL,
+  is_reset_verified      TINYINT(1) NOT NULL DEFAULT 0,
   created_at             TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at             TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),

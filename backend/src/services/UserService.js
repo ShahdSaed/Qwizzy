@@ -80,7 +80,8 @@ exports.forgotPassword = async (email) => {
 
   await UserRepository.update(user.id, {
     reset_password_code: resetCode,
-    reset_password_expires: expires
+    reset_password_expires: expires,
+    is_reset_verified: 0
   });
 
   const html = getEmailTemplate(
@@ -97,6 +98,10 @@ exports.verifyForgotPasswordCode = async (email, code) => {
   const user = await UserRepository.findByResetCode(email, code);
   if (!user) throw new AppError("Invalid or expired reset code", 400);
 
+  await UserRepository.update(user.id, {
+    is_reset_verified: 1
+  });
+
   return { 
     message: "Code is valid", 
     email: user.email,
@@ -109,16 +114,21 @@ exports.resetPassword = async (email, newPassword) => {
   const user = await exports.findByEmail(email);
   if (!user) throw new AppError("User not found", 404);
 
-  // Security check: only allow reset if a code exists and hasn't expired
+  // Security check: only allow reset if a code exists, hasn't expired, AND has been verified
   if (!user.reset_password_code || !user.reset_password_expires || new Date(user.reset_password_expires) < new Date()) {
-    throw new AppError("No active or valid password reset request found. Please request a new code.", 400);
+    throw new AppError("No active password reset request found.", 400);
+  }
+
+  if (!user.is_reset_verified) {
+    throw new AppError("Reset code has not been verified. Please verify the code first.", 403);
   }
 
   const hashedPassword = await hashPassword(newPassword);
   await UserRepository.update(user.id, {
     password_hash: hashedPassword,
     reset_password_code: null,
-    reset_password_expires: null
+    reset_password_expires: null,
+    is_reset_verified: 0
   });
 
   return { message: "Password reset successfully" };
