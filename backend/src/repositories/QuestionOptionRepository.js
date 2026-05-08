@@ -23,6 +23,14 @@ exports.findCorrectOptionByQuestionId = async (question_id) => {
   return rows[0] || null;
 };
 
+exports.findByLabelAndQuestionId = async (label, question_id) => {
+  const [rows] = await db.query(
+    "SELECT * FROM question_options WHERE label = ? AND question_id = ?",
+    [label, question_id]
+  );
+  return rows[0] || null;
+};
+
 exports.create = async (data) => {
   const { id, question_id, label, is_correct, sort_order } = data;
   await db.query(
