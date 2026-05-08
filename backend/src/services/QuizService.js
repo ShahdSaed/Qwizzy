@@ -1,7 +1,6 @@
 const QuizRepository = require("../repositories/QuizRepository");
 const { v4: uuid } = require("uuid");
 const AppError = require("../utils/AppError");
-const e = require("express");
 
 exports.getAll = async (user) => {
   const instructorId = (user && user.role === 'instructor') ? user.id : null;

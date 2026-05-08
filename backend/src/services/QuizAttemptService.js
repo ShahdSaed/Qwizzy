@@ -3,6 +3,9 @@ const QuestionRepository = require("../repositories/QuestionRepository");
 const AttemptAnswerRepository = require("../repositories/AttemptAnswerRepository");
 const { v4: uuid } = require("uuid");
 const AppError = require("../utils/AppError");
+const ResultRepository = require("../repositories/ResultRepository");
+const { calculateStandardScore } = require("../utils/scoringStrategies");
+
 
 exports.getAll = async () => {
   return await QuizAttemptRepository.findAll();
@@ -22,9 +25,6 @@ exports.create = async (data, user) => {
   return await QuizAttemptRepository.create(data);
 };
 
-const { StandardScoringStrategy } = require("../utils/scoringStrategies");
-
-const ResultRepository = require("../repositories/ResultRepository");
 
 exports.submit = async (quiz_id, user_answers, user) => {
   // 1. Fetch questions with options
@@ -34,8 +34,7 @@ exports.submit = async (quiz_id, user_answers, user) => {
   }
 
   // 2. Use Strategy Pattern for scoring
-  const scoringStrategy = new StandardScoringStrategy();
-  const { totalScore, maxScore, results, answersToSave } = scoringStrategy.calculate(questions, user_answers);
+  const { totalScore, maxScore, results, answersToSave } = calculateStandardScore(questions, user_answers);
 
   const attemptId = uuid();
   const percentage = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;

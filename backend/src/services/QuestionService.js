@@ -1,6 +1,7 @@
 const QuestionRepository = require("../repositories/QuestionRepository");
 const { v4: uuid } = require("uuid");
 const AppError = require("../utils/AppError");
+const { createQuestion } = require("../utils/questionFactory");
 
 exports.getAll = async () => {
   return await QuestionRepository.findAll();
@@ -22,10 +23,8 @@ exports.findByQuizId = async (quiz_id) => {
   return question;
 };
 
-const QuestionFactory = require("../utils/questionFactory");
-
 exports.create = async (data) => {
-  const questionData = QuestionFactory.create(data);
+  const questionData = createQuestion(data);
   return await QuestionRepository.create(questionData);
 };
 
