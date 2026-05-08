@@ -22,27 +22,77 @@ The project follows a **Layered Architecture (Controller-Service-Repository)** a
 - **[SRS Document](file:///c:/Users/IT/OneDrive/Documents/Qwizzy/SRS.md)**: Functional and non-functional requirements.
 - **[Design & Architecture](file:///c:/Users/IT/OneDrive/Documents/Qwizzy/DESIGN.md)**: UML diagrams (Use Case, Class, Sequence) and pattern details.
 
-## 📡 API Endpoints (Summary)
+## 📡 API Endpoints
 
-### Authentication
-- `POST /api/users/register`: Create new account.
-- `POST /api/users/login`: Authenticate and get JWT.
-- `POST /api/users/verify-email`: Verify account via code.
+### 🔐 Authentication & Users (`/api/users`)
+| Method | Endpoint | Description | Auth |
+| :--- | :--- | :--- | :--- |
+| POST | `/signup` | Register a new user | Public |
+| POST | `/signin` | Login and get JWT | Public |
+| POST | `/verify-email` | Verify email with code | Public |
+| POST | `/forgot-password` | Request reset code | Public |
+| POST | `/verify-forgot-password-code` | Verify reset code | Public |
+| POST | `/reset-password` | Set new password | Public |
+| GET | `/` | Get all users | Admin |
+| GET | `/stats` | Get user stats (points, score) | Auth |
+| GET | `/:id` | Get user profile | Auth |
+| PUT | `/` | Update own profile | Auth |
+| DELETE | `/:id` | Delete user | Admin |
 
-### Quizzes
-- `GET /api/quizzes`: List all quizzes.
-- `POST /api/quizzes`: Create a quiz (Instructor).
-- `GET /api/quizzes/:id/questions`: Get questions for a specific quiz.
+### 📁 Categories (`/api/categories`)
+| Method | Endpoint | Description | Auth |
+| :--- | :--- | :--- | :--- |
+| POST | `/` | Create category | Admin |
+| GET | `/` | Get all categories | Admin |
+| GET | `/:id` | Get category by ID | Admin |
+| PUT | `/:id` | Update category | Admin |
+| DELETE | `/:id` | Delete category | Admin |
 
-### Attempts
-- `POST /api/quiz-attempts/submit`: Submit answers and get score.
-- `GET /api/results/:id`: View detailed performance analysis.
+### 📝 Quizzes (`/api/quizzes`)
+| Method | Endpoint | Description | Auth |
+| :--- | :--- | :--- | :--- |
+| POST | `/` | Create a quiz | Admin |
+| GET | `/` | List all quizzes | Auth |
+| GET | `/question_count` | List quizzes with counts | Auth |
+| GET | `/:id` | Get quiz details | Auth |
+| PUT | `/:id` | Update quiz | Admin |
+| DELETE | `/:id` | Delete quiz | Admin |
+
+### ❓ Questions & Options (`/api/questions`, `/api/options`)
+| Method | Endpoint | Description | Auth |
+| :--- | :--- | :--- | :--- |
+| POST | `/api/questions` | Create question | Admin |
+| GET | `/api/questions` | List all questions | Public |
+| GET | `/api/questions/:id` | Get question | Public |
+| GET | `/api/questions/quiz/:quiz_id` | Get quiz questions | Public |
+| PUT | `/api/questions/:id` | Update question | Admin |
+| DELETE | `/api/questions/:id` | Delete question | Admin |
+| POST | `/api/options` | Create option | Admin |
+| GET | `/api/options/question/:q_id` | Get options for question | Public |
+
+### 🎯 Attempts & Results (`/api/quiz-attempts`, `/api/results`)
+| Method | Endpoint | Description | Auth |
+| :--- | :--- | :--- | :--- |
+| POST | `/api/quiz-attempts` | Start a quiz attempt | Auth |
+| POST | `/api/quiz-attempts/submit` | Submit answers & grade | Auth |
+| GET | `/api/quiz-attempts` | List all attempts | Admin |
+| GET | `/api/results` | List all results | Auth |
+| GET | `/api/results/:id` | View detailed analysis | Auth |
 
 ## 🧪 Testing
-The project uses **Jest** for unit testing.
+The project uses **Jest** and **Supertest** for comprehensive testing, covering both Unit and Integration layers.
+
+### Run all tests:
 ```bash
 npm test
 ```
+
+### Run tests with coverage report:
+```bash
+npx jest --coverage
+```
+
+Current achievement: **>50% overall code coverage**, with critical components like `UserRepository` and `AuthMiddleware` reaching **>70%**.
 
 ## 🛠️ Components
 1.  **Controllers**: Handle HTTP requests and responses.
@@ -53,6 +103,8 @@ npm test
 
 ### Design Patterns Used:
 - **Repository Pattern**: Abstraction of data storage logic.
+- **Factory Pattern**: Standardized creation of different question types.
+- **Strategy Pattern**: Flexible scoring logic for quiz attempts.
 - **Async Wrapper Pattern**: Centralized error handling for cleaner controllers.
 - **Singleton Pattern**: Database connection management.
 
@@ -67,9 +119,13 @@ backend/
 │   ├── middleware/      # Auth, Error, Validation middlewares
 │   ├── routes/         # API endpoints
 │   ├── validators/      # Joi schemas
-│   ├── utils/          # Helpers (JWT, Email, AsyncHandler)
+│   ├── utils/          # Helpers (JWT, Email, AsyncHandler, Patterns)
 │   ├── dto/            # Data Transfer Objects
 │   └── config/         # Database & environment config
+├── tests/
+│   ├── unit/           # Unit tests for services/middleware
+│   ├── integration/    # API endpoint tests using Supertest
+│   └── helpers/        # Mock data & test utilities
 ├── app.js              # Express app setup
 └── server.js           # Server entry point
 database/
@@ -87,6 +143,7 @@ database/
 3.  **Configure environment variables**:
     Create a `.env` file in the `backend/` directory:
     ```env
+    NODE_ENV=development
     PORT=5000
     DB_HOST=localhost
     DB_USER=root
@@ -101,13 +158,6 @@ database/
     ```bash
     npm run dev
     ```
-
-## 🧪 Testing
-
-Run unit tests using:
-```bash
-npm test
-```
 
 ## 📝 License
 
