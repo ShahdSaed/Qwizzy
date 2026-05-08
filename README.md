@@ -87,15 +87,15 @@ database/
 3.  **Configure environment variables**:
     Create a `.env` file in the `backend/` directory:
     ```env
-    PORT=
-    DB_HOST=
-    DB_USER=
-    DB_PASS=
-    DB_NAME=
-    DB_PORT=
-    JWT_SECRET=
-    EMAIL_USER=
-    EMAIL_PASS=
+    PORT=5000
+    DB_HOST=localhost
+    DB_USER=root
+    DB_PASS=your-sql-password
+    DB_NAME=your-sql-database-name
+    DB_PORT=3306
+    JWT_SECRET=your-secret-key-here
+    EMAIL_USER=[EMAIL_ADDRESS]
+    EMAIL_PASS=your-app-password
     ```
 4.  **Run the server**:
     ```bash
